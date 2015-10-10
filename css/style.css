@@ -1,0 +1,87 @@
+body {
+  padding-top: 70px;
+}
+
+.rowContainer {  
+  border-left: 0.1em solid gray;
+  width: calc(100% / 12 * 9);
+}
+
+.menuContainer {
+  height: calc(80vh / 4);
+  width: calc(100% / 12 * 2);
+}
+
+.barChartContainer, .pieChartContainer {
+  width: calc(100% / 12 * 7.5);
+  height: calc(80vh / 3);
+  border-left: 0.1em solid gray;
+}
+
+.pieChartContainer {
+  width: calc(100% / 12 * 2.5);
+  height: calc(80vh / 3);
+}
+
+/***************************************
+Bar Chart Styles
+***************************************/
+
+.bar:hover {
+  cursor: pointer;
+  border: 0.5em solid black;
+}
+
+.axis {
+  font-size: 1.3vh;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+}
+
+.x.axis path {
+  display: none;
+}
+
+/***************************************
+Pie Chart Styles
+***************************************/
+
+.arc path {
+  stroke: #fff;
+}
+
+.arc {
+  font-size: 1.3vh;
+}
+
+.arc:hover {
+  cursor: pointer;
+}
+
+/************************************
+Tool Tips
+************************************/
+#chart {
+  height: 360px;
+  position: relative;
+  width: 360px;
+}
+
+.tooltip {
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  display: none;
+  font-size: 12px;
+  left: 130px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 95px;
+  width: 80px;
+  z-index: 10;
+}

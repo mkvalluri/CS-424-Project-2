@@ -1,4 +1,4 @@
-# CS-424-Project2
+# CS-424-Project-2
 **Title:** Shadows in the Rain<br />
 **Description:** <br />
 **Date:** 09/28/2015<br />

@@ -1,0 +1,74 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CS 424 - Project #1</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- custom styles -->
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 col-md-offset-1 text-left">
+                <!-- Header Portion -->
+                <h1>CS 424 - Project #1</h1>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- Body Portion -->
+    <!-- Defining container and then row which would wrap the entire body -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-1 col-md-offset-1 text-left">
+                <ul class="nav nav-pills nav-stacked text-right">
+                    <li role="presentation"><a href="index.html">Home</a></li>
+                    <li role="presentation"><a href="features.html">Features</a></li>
+                    <li role="presentation"><a href="application.html">Application</a></li>
+                    <li role="presentation" class="active"><a href="sourcecode.html">Source Code</a></li>
+                    <li role="presentation"><a href="observations.html">Observations</a></li>
+                </ul>
+            </div>
+            <div class="col-md-10 rowContainer">
+                <h4>You can download the sourcecode of this project from below link. Once downloaded, follow the instructions given below to run the application</h4>
+
+                <a href="https://github.com/mvallu/CS-424-Project-2">Source Code</a>
+                <br>
+                <h4>Instructions</h4>
+                <ul>
+                    <li>Download the sourcecode</li>
+                    <li>Extract it to any given directory</li>
+                    <li>Download and install Nodejs from the below link.
+                        <br><a href="https://nodejs.org/en/">NodeJS download link</a></li>
+                    <li>Once installed, add the path variable to node directory.</li>
+                    <li>Open command prompt in the directory where sourcecode was extracted.</li>
+                    <li>Run below commands
+                        <br>
+                        <div class="well well-sm">npm install http-server -g
+                            <br>http-server</div>
+                    </li>
+                    <li>Now go to the browser and navigate to http://localhost:8080</li>
+                    <li>You should see the homepage.</li>
+
+                </ul>
+                <br>
+                <h4>Video Link</h4>
+            </div>
+        </div>
+
+        <hr>
+        <footer class="text-center">
+            <h5>&copy; Murali Krishna Valluri 2015</h5>
+        </footer>
+    </div>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>
