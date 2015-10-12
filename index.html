@@ -14,53 +14,33 @@
 
 <body>
     <!-- Body Portion -->
-    <!-- Defining container and then row which would wrap the entire body -->
     
-     <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">CS 424 - Project #2</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a href="index.html">Home</a></li>
-                    <li ><a href="features.html">Features</a></li>
-                    <li ><a href="about.html">About Us</a></li>
-                    <li ><a href="application.html">Application</a></li>
-                    <li ><a href="sourcecode.html">Source Code</a></li>
-                    <li ><a href="observations.html">Observations</a></li>       
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-    
-    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-10">
+            <div class="col-md-1 col-md-offset-1 text-left">
+                <ul class="nav nav-pills nav-stacked text-right">
+                    <li class="active"><a href="index.html">Home</a></li>
+                    <li><a href="about.html">Team</a></li>
+                    <li><a href="data.html">Data</a></li>   
+                    <li><a href="samples.html">Samples</a></li>
+                </ul>
+            </div>
+            <div class="col-md-10 rowContainer">
                 <h1>Shadows in the Rain</h1>
                 <p class="lead">This application is used to Investigate the paths that hurricanes take, related to the time of year and their destructive potential.</p>
-
-                <h3>Data Sources and Extraction</h3>
-                <p></p>
-
+       
+                <h3>Design</h3>
+                <div class="row">
+                    <img src="images/design1.png" class="img-responsive" alt="Responsive image" />
+                </div>
+                
+                <br />
                 <h3>Frameworks, Libraries used</h3>
                 <p>This application uses <a href="http://http://d3js.org/">d3js</a> for manipulating dom elements. Used Leaflet for maps and <a href="http://getbootstrap.com/">Bootstrap</a>
                 for styling.</p>
 
                 <h3>References</h3>
                 <p></p>
-
-
-                <h3>Design</h3>
-                <div class="row">
-                </div>
 
                 <h3>Special Credits</h3>
                 <p></p>
@@ -69,7 +49,6 @@
 
         <hr>
         <footer class="text-center">
-            <h5>&copy; Murali Krishna Valluri 2015</h5>
         </footer>
     </div>
     <script src="js/jquery-2.1.4.min.js"></script>
