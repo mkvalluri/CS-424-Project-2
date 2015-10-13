@@ -1,0 +1,256 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CS 424 - Project #2</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- custom styles -->
+</head>
+
+<body>
+    <!-- Body Portion -->
+    
+      <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-1 col-md-offset-1 text-left">
+                <ul class="nav nav-pills nav-stacked text-right">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">Team</a></li>
+                    <li class="active"><a href="data.html">Data</a></li>   
+                    <li><a href="samples.html">Samples</a></li>
+                </ul>
+            </div>
+            <div class="col-md-10 rowContainer">
+                <h1>Application Data</h1>
+                <p class="lead">The Atlantic hurricane database and the Northeast and North Central Pacific hurricane database were obtained from the <a href="http://www.nhc.noaa.gov/data/#hurdat" target="_blank">National Hurricane Center</a> webpage. These databases are in a comma-delimited text format. The dataset format information is available in the following <a href="http://www.nhc.noaa.gov/data/hurdat/hurdat2-format-atlantic.pdf" target="_blank">link</a>.</p>
+       			
+                <table class="table"> 
+                	<caption>Data fields</caption>
+        			    <thead>
+    						<tr>
+    							<th>FIELD</th>
+    							<th>DESCRIPTION</th>
+    							<th>VALUES</th>
+    						</tr>
+    					</thead>
+    			    	<tbody>
+    						<tr>
+    							<td>name</td>
+    							<td>Hurricane Name</td>
+    							<td>Given by dataset. UNNAMED for old registers.</td>
+    						</tr>
+    						<tr>
+    							<td>basin</td>
+    							<td>Atlantic or North Pacific basin</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>id</td>
+    							<td>Unique identifier</td>
+    							<td>Created from Basin + Cyclone Number</td>
+    						</tr>
+    						<tr>
+    							<td>timestamp: year</td>
+    							<td>Year event</td>
+    							<td>Interval: [1851-2014]</td>
+    						</tr>
+    						<tr>
+    							<td>timestamp: month</td>
+    							<td>Month event</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>timestamp: day</td>
+    							<td>Day event</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>timestamp: hour</td>
+    							<td>Hour event</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>timestamp: minute</td>
+    							<td>Minute event</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>maxwind</td>
+    							<td>Maximum sustained wind (in knots)</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>minpressure</td>
+    							<td>Minimum Pressure (int millibars)</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>latitude</td>
+    							<td>Latitude</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>longitude</td>
+    							<td>Longitude</td>
+    							<td></td>
+    						</tr>
+    						<tr>
+    							<td>l</td>
+    							<td>Record identifier for event</td>
+    							<td>
+    								<ul>
+    									<li>C – Closest approach to a coast, not followed by a landfall</li>
+    									<li>G – Genesis</li>
+    									<li>I – An intensity peak in terms of both pressure and wind</li>
+    									<li>L – Landfall (center of system crossing a coastline)</li>
+    									<li>P – Minimum in central pressure</li>
+    									<li>R – Provides additional detail on the intensity of the cyclone when rapid changes are underway</li>
+    									<li>S – Change of status of the system</li>
+    									<li>T – Provides additional detail on the track (position) of the cyclone</li>
+    									<li>W – Maximum sustained wind speed</li>
+    									<li>-999 - no data</li>	
+    								</ul>
+    							</td>
+    						</tr>
+    						<tr>
+    							<td>ts</td>
+    							<td>Status of system</td>
+    							<td>
+    								<ul>
+    									<li>TD – Tropical cyclone of tropical depression intensity (< 34 knots)</li>
+    									<li>TS – Tropical cyclone of tropical storm intensity (34-63 knots)</li>
+    									<li>HU – Tropical cyclone of hurricane intensity (> 64 knots)</li>
+    									<li>EX – Extratropical cyclone (of any intensity)</li>
+    									<li>SD – Subtropical cyclone of subtropical depression intensity (< 34 knots)</li>
+    									<li>SS – Subtropical cyclone of subtropical storm intensity (> 34 knots)</li>
+    									<li>LO – A low that is neither a tropical cyclone, a subtropical cyclone, nor an extratropical cyclone (of any intensity)</li>
+    									<li>WV – Tropical Wave (of any intensity)</li>
+    									<li>DB – Disturbance (of any intensity)</li>
+    									<li>-999 - no data</li>
+    								</ul>
+    							</td>
+    						</tr>
+    						<tr>
+    							<td>q34: ne</td>
+    							<td> 34kt wind radii extent in northeastern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q34: se</td>
+    							<td> 34kt wind radii extent in southeastern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q34: sw</td>
+    							<td> 34kt wind radii extent in northwestern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q34: nw</td>
+    							<td> 34kt wind radii extent in northwestern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q50: ne</td>
+    							<td> 50kt wind radii extent in northeastern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q50: se</td>
+    							<td>50kt wind radii extent in southeastern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q50: sw</td>
+    							<td>34kt wind radii extent in southwestern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q50: nw</td>
+    							<td>34kt wind radii extent in northwestern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q64: ne</td>
+    							<td>64kt wind radii extent in northeastern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q64: se</td>
+    							<td>64kt wind radii extent in southeastern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q64: sw</td>
+    							<td>64kt wind radii extent in southwestern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+    						<tr>
+    							<td>q64: nw</td>
+    							<td>64kt wind radii extent in northwestern quadrant</td>
+    							<td>In nautical miles. -999 is no data exists.</td>
+    						</tr>
+		    			</tbody>
+                </table>
+                
+				<h2>Parsing</h2>
+				<p>The NHC text datasets were used to create a single GeoJSON file. A C# custom development was used for this task.</p>
+
+                <h2>Example GeoJSON</h2>
+                <div class="highlight">
+                	<pre>
+                		<code>
+{ "type": "FeatureCollection",
+  "crs": { "type": "name",
+           "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+    },
+    "features": [
+      { "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [-95.2322, 19.5111]},
+        "properties": {
+            "name": "HANNAH",
+            "basin": "Atlantic",
+            "id":"AL12312",
+            "timestamp": {
+				"year":2012,
+				"month":1,
+	            "day":12,
+	            "hour":23,
+	            "minute":3, 
+	            "second":54
+            },
+            "maxwind":104.2,
+            "minpressure":80,
+            "latitude":19.5111,
+            "longitude":-95.2322,
+            "l":"G",
+            "ts":"EX",
+            "q34": { "ne": 12.3, "se": 13.2, "sw": 10.2, "nw": 5.2 },
+            "q50": { "ne": 12.3, "se": 13.2, "sw": 10.2, "nw": 5.2 },
+            "q64": { "ne": 12.3, "se": 13.2, "sw": 10.2, "nw": 5.2 }
+        }
+      }
+      ...
+    ]
+}
+                		</code>
+                	</pre>
+                </div>
+
+            </div>
+        </div>
+
+        <hr>
+        <footer class="text-center">
+        </footer>
+    </div>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>
