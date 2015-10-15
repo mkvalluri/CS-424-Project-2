@@ -1,0 +1,8 @@
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\bin\Debug\DataCleanupProj.exe.config
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\bin\Debug\DataCleanupProj.exe
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\bin\Debug\DataCleanupProj.pdb
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\bin\Debug\Newtonsoft.Json.dll
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\bin\Debug\Newtonsoft.Json.xml
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\obj\Debug\DataCleanupProj.csprojResolveAssemblyReference.cache
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\obj\Debug\DataCleanupProj.exe
+D:\Projects\CS-424-Project-2\parser\DataCleanupProj\obj\Debug\DataCleanupProj.pdb
