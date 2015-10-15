@@ -99,6 +99,7 @@ namespace DataCleanupProj
                         tempFilteredData.name = name;
                         tempFilteredData.id = id;
                         tempFilteredData.year = year;
+                        tempFilteredData.basin = basin;
                         tempFilteredData.wind.avg = wAvg;
                         tempFilteredData.wind.max = wMax;
                         tempFilteredData.wind.min = wMin;

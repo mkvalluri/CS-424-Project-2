@@ -14,6 +14,8 @@ namespace DataCleanupProj
 
         public int year { get; set; }
 
+        public string basin { get; set; }
+
         public Wind wind { get; set; }
 
         public Pressure pressure { get; set; }
