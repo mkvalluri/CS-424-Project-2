@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Bootstrap *must* tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>CS424-Project 2: Barchart sample page</title>
+	
+	<script type="text/javascript" src="../js/d3.min.js"></script>  <!-- D3 -->
+	<script type="text/javascript" src="./js/barchart.js"></script> <!-- Barchart -->
+
+	<style>
+		#bar-container{
+			width: 600px;
+			height: 600px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="bar-container"></div>
+	
+	<script>
+		var barChart = null;
+		d3.json("../resources/data.json", function(err, data) {
+			if (err) throw err;
+
+			var filter = {};
+			filter.year_init = 2000;
+			filter.year_end = 2010;
+			barChart = new BarChart("#bar-container", data, filter, "AL");
+			barChart.init();
+		}
+	</script>
+</body>

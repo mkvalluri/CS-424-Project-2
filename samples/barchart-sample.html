@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Bootstrap *must* tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>CS424-Project 2: Barchart sample page</title>
+	
+	<script type="text/javascript" src="../js/d3.min.js"></script>  <!-- D3 -->
+	<script type="text/javascript" src="../js/barchart.js"></script> <!-- Barchart -->
+
+	<style>
+		#bar-container{
+			width: 600px;
+			height: 400px;
+		}
+
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+		.bar_rect{
+			fill: red;
+		}
+		.bar_rect:hover{
+			fill: black;
+		}
+		.chart-title{
+			font-family: sans-serif;
+			font-weight: bold;
+			font-size: 14px;
+		}
+		.chart-tooltip{
+			background-color: #eee;
+			box-shadow: 0 0 5px #999999;
+			color: #333;
+			display: none;
+			font-size: 12px;
+			left: 130px;
+			padding: 10px;
+			position: absolute;
+			text-align: center;
+			top: 95px;
+			width: 100px;
+			z-index: 10;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
+			-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			pointer-events: none;
+			font-family: sans-serif;
+		}
+		.tooltip-year{
+			font-weight: bold;
+		}
+		.tooltip-total{
+
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		Year 1:<input type="text" name="year1" id="year1" value="1950"><br/>
+		Year 2:<input type="text" name="year2" id="year2" value="2010">
+		<input type="submit" value="Update" onclick="update();"><br/>
+	</div>
+	<div id="bar-container"></div>
+	
+	<script>
+		var barChart = null;
+		d3.json("../resources/filteredData.json", function(err, data) {
+			if (err) throw err;
+
+			var filter = {};
+			filter.year_init = 1950;
+			filter.year_end = 2010;
+			barChart = new BarChart("#bar-container", "num-hurricanes", data, filter, "AL");
+			barChart.init();
+		});
+
+		function update(){
+			var year1 = document.getElementById("year1").value;
+			var year2 = document.getElementById("year2").value;
+
+			var filter = {};
+			filter.year_init = year1;
+			filter.year_end = year2;
+			barChart.update(filter);
+		}
+	</script>
+</body>
