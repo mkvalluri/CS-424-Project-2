@@ -1,0 +1,122 @@
+<!--
+http://bootstrap-datepicker.readthedocs.org/en/stable/
+https://en.wikipedia.org/wiki/Saffir%E2%80%93Simpson_hurricane_wind_scale
+-->
+
+<html>
+<head>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker.min.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+  <script src="../js/map.js" charset="utf-8"></script>
+
+  <style>
+  	#map {
+		width: 1280px;
+		height: 800px;
+	}
+	.info {
+		height: 80px;
+		width: 450px;
+		padding: 6px 8px;
+		font: 16px/18px Arial, Helvetica, sans-serif;
+		background: black;
+		background: rgba(0,0,0,0.8);
+		box-shadow: 0 0 15px rgba(0,0,0,0.2);
+		border-radius: 5px;
+		color: white;
+	}
+	.waypoints {
+	    fill: rgba(214,38,255,0.5);
+	}
+	.waypoints-selected {
+	    fill: rgba(214,38,255,1);
+	}
+	.lineConnect {
+	    fill: none;
+	    stroke: rgba(214,38,255,0.8);
+	}
+	.lineTD {
+		stroke-width:1;
+		stroke: rgba(153,216,201,0.8);
+	}
+	.lineTS {
+		stroke-width:2;
+		stroke: rgba(44,162,95,0.8);
+	}
+	.lineH1 {
+		stroke-width:3;
+		stroke: rgba(255,255,178,0.8);
+	}	
+	.lineH2 {
+		stroke-width:4;
+		stroke: rgba(254,204,92,0.8);
+	}	
+	.lineH3 {
+		stroke-width:5;
+		stroke: rgba(253,141,60,0.8);
+	}	
+	.lineH4 {
+		stroke-width:6;
+		stroke: rgba(240,59,32,0.8);
+	}	
+	.lineH5 {
+		stroke-width:7;
+		stroke: rgba(189,0,38,0.8);
+	}	
+	svg {
+		  position: relative;
+	}
+	.hurricane-info{
+		display: block;
+		padding: 6px 8px;
+	    font: 14px/16px Arial, Helvetica, sans-serif;
+	    background: white;
+	    background: rgba(255,255,255,0.8);
+	    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+	    border-radius: 5px;
+	}
+  </style>
+</head>
+
+<body>
+	<input type="text" id="hurr-name" placeholder="Hurricane Name">
+	<input type="text" id="initial-date" placeholder="mm/dd/yyyy" value="01/01/2014" data-date-format="mm/dd/yyyy">
+	<input type="text" id="final-date" placeholder="mm/dd/yyyy" value="12/31/2014" data-date-format="mm/dd/yyyy">
+	<input type="button" value="add hurricane" onclick="addHurricane();">
+	<div id="map"></div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+
+	<script>
+		$('#initial-date').datepicker({
+		    startDate: "01/01/1851"
+		});
+
+		$('#final-date').datepicker({
+		    startDate: "01/01/1851"
+		});
+
+		var hurricaneMap = null;
+
+		d3.json("../resources/data.json", function(error, collection){
+			hurricaneMap = new Map(collection, "map");
+			hurricaneMap.init();
+		});
+
+		function addHurricane(){
+			var filter = {};
+			filter.name = $('#hurr-name').val().trim();
+			filter.initial_date = $('#initial-date').datepicker('getDate');
+			filter.final_date = $('#final-date').datepicker('getDate');
+			hurricaneMap.addHurricane(filter);
+		};
+	</script>
+</body>
+</html>
