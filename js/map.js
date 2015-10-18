@@ -1,50 +1,92 @@
+/*
+	Creates the map methods for showing the hurricanes paths from 1851 to 2014.
+	Map provider: Mapbox
+	Base Layers: Greyscale, Blackscale and Streets
+	Overlay Layers:
+	  - Data Layer: Shows the measurements obtained from the NHC dataset and shown as
+	     dots for a given time and position in the North Atlantic and Pacific Oceans.
+	  - Path Layer: Shows the hurricane path with different line thickness and color 
+	     depending on the hurricane classification.
+	  - Heatmap: Shows the heatmap graph of the most convenient places to live based
+	     on the historical data.
+*/
+
+/* Class constructor and attributes */
 function Map(data, target){
 	this.chart = {};
 
-	this.chart.data = data;
-	this.chart.map = null;
-	this.chart.svg = null;
-	this.chart.pointInfo = null;
+	this.chart.data = data;				// Holds all the NHC dataset
+	this.chart.map = null;				// Leaflet map object
+	this.chart.svgLineLayer = null;		// Data overlay layer
+	this.chart.svgPathLayer = null;		// Path overlay layer
+	this.chart.svgHeatmapLayer = null;	// Heatmap overlay layer
+	this.chart.pointInfo = null;		// Data information div shown on the bottom left
 
-	this.chart.tag = target;
+	this.chart.tag = target;			// Leaflet target html id
 
-	this.chart.transformation = null;
-	this.chart.path = null;
+	this.chart.transformation = null;	// Stored for making D3 geo transformation of
+	this.chart.path = null;				// Leaflet objects
 }
 
+/* Class methods */
 Map.prototype = {
 	constructor: Map,
 
+	/* Utility function that transforms a GeoJSON coordinate into a 
+	   Leaflet coordinate */
 	applyLatLngToLayer: function(d){
 		var y = d.geometry.coordinates[1]
 		var x = d.geometry.coordinates[0]
 		return this.chart.map.latLngToLayerPoint(new L.LatLng(y, x));
-	},
+	}, // end applyLatLngToLayer function
 
-	createTooltip: function(){
+	/* Utility function that classifies a hurricane based on its wind at a 
+	   certain point in time speed. */
+	getHurricaneCategory: function(speed){
+		if (speed >= 137)
+			return "H5";
+		else if (speed >= 113)
+			return "H4";
+		else if (speed >= 96)
+			return "H3";
+		else if (speed >= 83)
+			return "H2";
+		else if (speed >= 64)
+			return "H1";
+		else if (speed >= 34)
+			return "TS";
+		else
+			return "TD";
+	}, // end getHurricaneCategory function
+
+	/* Shows an information chart on the bottom left section of the map. The object
+	   is stored as a Leaflet Control and updates its information everytime the 
+	   user hovers on a data point. */
+	createInfoChart: function(){
 		var self = this,
 			chart = this.chart;
-
-		/*
-		var tooltip = chart.svg.select("g").append("div")
-						 .attr("class", "hurricane-info")
-						 .attr("x", 50).attr("y", 50);
-		tooltip.append("div").attr("class", "hurr-name");
-		tooltip.append("div").attr("class", "hurr-date");
-		tooltip.append("div").attr("class", "hurr-wind");
-		tooltip.append("div").attr("class", "hurr-pressure");
-		tooltip.html("TEEEEEST");*/
-
 
 		chart.pointInfo = L.control({position : 'bottomleft'});
 		var map = chart.map;
 
+		// default information to show when the map is displayed
+		// TODO: Hide?
 		chart.pointInfo.onAdd = function(map){
 			this._div = L.DomUtil.create('div', 'info');
 			this._div.innerHTML = '<h4>Path Information</h4>';
 			return this._div;
 		};
 
+		/* Shows the following data point information:
+		   - Hurricane Name
+		   - Category: Based on the Simpson wind scale. Although the NHC dataset has categories
+		     for elements below a Tropical Depression (TD), every element below that category is
+		     being considered as TD to simplify the visualization.
+		   - Timestamp: Date of the measurement. Hour is not considered as being sometimes incomplete
+		   - Center Location: Latitude and Longitude of the data point
+		   - Wind Speed: Calculated in mph. NHC dataset has the value stored in knots.
+		   - Min Pressure: In milibars.
+		*/
 		chart.pointInfo.update = function(elem){
 			var speed = parseFloat(Math.round(elem.properties.maxwind * 1.15078)).toFixed(2);
 
@@ -72,32 +114,20 @@ Map.prototype = {
 		}
 
 		chart.pointInfo.addTo(map);
-	},
+	}, // end createInfoChart function
 
-	getHurricaneCategory: function(speed){
-		if (speed >= 137)
-			return "H5";
-		else if (speed >= 113)
-			return "H4";
-		else if (speed >= 96)
-			return "H3";
-		else if (speed >= 83)
-			return "H2";
-		else if (speed >= 64)
-			return "H1";
-		else if (speed >= 34)
-			return "TS";
-		else
-			return "TD";
-	},
-
+	/* Adds the hurricanes to the different map layers based on the filter control.
+	   The data points are inserted as SVG circle elements. The paths are inserted
+	   independently between two data points per hurricane as it is needed to show
+	   a different thickness or color depending of the current status.
+	*/
 	addHurricane: function(filter){
 		var self = this,
 			chart = this.chart,
 			map = chart.map;
 
 		/* Remove any existing element in the map */
-		var g = chart.svg.select("g");
+		var g = chart.svgLineLayer.select("g");
 
 		g.selectAll("circle").remove();
 		g.selectAll(".lineConnect").remove();
@@ -140,20 +170,7 @@ Map.prototype = {
 
 		var oldHurricaneId = [];
 		var lines = [];
-		/*
-		for(var i = 0; i < filteredData.length; i++){
-			id = filteredData[i].properties.id;
-			if (id != oldHurricaneId){
-				if (lines.length > 0)
-					g.append("path")
-				     .datum([lines])
-			         .attr("class", "lineConnect");
 
-		        lines = [];
-		        oldHurricaneId = id;
-			}
-			lines.push(filteredData[i]);
-		}*/
 		for(var i = 0; i < filteredData.length - 1; i++){
 			id1 = filteredData[i].properties.id;
 			id2 = filteredData[i+1].properties.id;
@@ -166,14 +183,7 @@ Map.prototype = {
 				     .datum([lines])
 			         .attr("class", "lineConnect");
 			}
-		}/*
-		if (lines.length > 0)
-			g.append("path")
-				     .datum([lines])
-			         .attr("class", function(d){
-			         	console.log(d);
-			         	return "lineConnect";
-			         });*/
+		}
 
 		self.reset();
 
@@ -181,12 +191,12 @@ Map.prototype = {
 			var point = map.latLngToLayerPoint(new L.LatLng(y, x));
 			this.stream.point(point.x, point.y);
 		};
-	},
+	}, // end addHurricane function
 
 	reset: function(){
 		var self = this,
 			chart = this.chart,
-			g = chart.svg.select("g");
+			g = chart.svgLineLayer.select("g");
 
 		if (chart.path != null){
 			var bounds = chart.path.bounds(chart.data);
@@ -200,7 +210,7 @@ Map.prototype = {
 	                    self.applyLatLngToLayer(d).y + ")";
 	        });
 
-			chart.svg.attr("width", bottomRight[0] - topLeft[0] + 20)
+			chart.svgLineLayer.attr("width", bottomRight[0] - topLeft[0] + 20)
 				.attr("height", bottomRight[1] - topLeft[1] + 50)
 				.style("left", (topLeft[0]) + "px")
 				.style("top", (topLeft[1]) + "px");
@@ -222,7 +232,7 @@ Map.prototype = {
 					     	d3.select(this).classed("line"+hurrCat, true);
 					     })
 		}
-	},
+	}, // end reset function
 
 	init: function(){
 		var self = this,
@@ -250,15 +260,55 @@ Map.prototype = {
 			"Streets": streets
 		};
 
-		L.control.layers(baseLayers, null).addTo(chart.map);
+		var lineLayer = L.Class.extend({
+			initialize: function(){ return; },
+			onAdd: function(map){
+				chart.svgLineLayer.style("display", "block");
+			},
+			onRemove: function(map){
+				chart.svgLineLayer.style("display", "none");
+			}
+		});
 
-		chart.svg = d3.select(chart.map.getPanes().overlayPane).append("svg");
-		var g = chart.svg.append("g").attr("class", "leaflet-zoom-hide");
+		var hurrLineLayer = new lineLayer();
+		var overlays = {};
+		overlays["Line Layer"] = hurrLineLayer;
+
+		L.control.layers(baseLayers, overlays).addTo(chart.map);
+
+		chart.svgLineLayer = d3.select(chart.map.getPanes().overlayPane).append("svg");
+		var g = chart.svgLineLayer.append("g").attr("class", "leaflet-zoom-hide");
 
 		chart.map.on("viewreset", function(){
 			self.reset();
 		});
 
-		self.createTooltip();
-	}
+		self.createInfoChart();
+	} // end init function
 }
+
+
+
+		/*
+		for(var i = 0; i < filteredData.length; i++){
+			id = filteredData[i].properties.id;
+			if (id != oldHurricaneId){
+				if (lines.length > 0)
+					g.append("path")
+				     .datum([lines])
+			         .attr("class", "lineConnect");
+
+		        lines = [];
+		        oldHurricaneId = id;
+			}
+			lines.push(filteredData[i]);
+		}*/
+
+		/*
+		if (lines.length > 0)
+			g.append("path")
+				     .datum([lines])
+			         .attr("class", function(d){
+			         	console.log(d);
+			         	return "lineConnect";
+			         });*/
