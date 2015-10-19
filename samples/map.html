@@ -11,6 +11,7 @@ https://en.wikipedia.org/wiki/Saffir%E2%80%93Simpson_hurricane_wind_scale
   <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
   <script src="../js/map.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
 
   <style>
   	#map {
@@ -20,6 +21,17 @@ https://en.wikipedia.org/wiki/Saffir%E2%80%93Simpson_hurricane_wind_scale
 	.info {
 		height: 80px;
 		width: 450px;
+		padding: 6px 8px;
+		font: 16px/18px Arial, Helvetica, sans-serif;
+		background: black;
+		background: rgba(0,0,0,0.8);
+		box-shadow: 0 0 15px rgba(0,0,0,0.2);
+		border-radius: 5px;
+		color: white;
+	}
+	.time {
+		height: 40px;
+		width: 100px;
 		padding: 6px 8px;
 		font: 16px/18px Arial, Helvetica, sans-serif;
 		background: black;
@@ -86,6 +98,9 @@ https://en.wikipedia.org/wiki/Saffir%E2%80%93Simpson_hurricane_wind_scale
 	<input type="text" id="initial-date" placeholder="mm/dd/yyyy" value="01/01/2014" data-date-format="mm/dd/yyyy">
 	<input type="text" id="final-date" placeholder="mm/dd/yyyy" value="12/31/2014" data-date-format="mm/dd/yyyy">
 	<input type="button" value="add hurricane" onclick="addHurricane();">
+	<input type="button" value="Play" id="btn-play" onclick="playInterval();">
+	<input type="button" value="Stop" id="btn-stop" onclick="stopInterval();">
+	<input type="text" id="anim-rate" placeholder="Speed Rate" value="1000">
 	<div id="map"></div>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -116,6 +131,23 @@ https://en.wikipedia.org/wiki/Saffir%E2%80%93Simpson_hurricane_wind_scale
 			filter.initial_date = $('#initial-date').datepicker('getDate');
 			filter.final_date = $('#final-date').datepicker('getDate');
 			hurricaneMap.addHurricane(filter);
+		};
+
+		function playInterval(){
+			if ($('#btn-play').val() == 'Play') $('#btn-play').val('Pause');
+			else $('#btn-play').val('Play');
+
+			var filter = {};
+			filter.name = $('#hurr-name').val().trim();
+			filter.initial_date = $('#initial-date').datepicker('getDate');
+			filter.final_date = $('#final-date').datepicker('getDate');
+
+			var rate = $('#anim-rate').val().trim();
+			hurricaneMap.play(filter, rate);
+		};
+
+		function stopInterval(){
+			hurricaneMap.stop();
 		};
 	</script>
 </body>

@@ -16,16 +16,27 @@ function Map(data, target){
 	this.chart = {};
 
 	this.chart.data = data;				// Holds all the NHC dataset
+	this.chart.filteredData = null;
+
 	this.chart.map = null;				// Leaflet map object
-	this.chart.svgLineLayer = null;		// Data overlay layer
+	this.chart.svgDataLayer = null;		// Data overlay layer
 	this.chart.svgPathLayer = null;		// Path overlay layer
 	this.chart.svgHeatmapLayer = null;	// Heatmap overlay layer
 	this.chart.pointInfo = null;		// Data information div shown on the bottom left
+	this.chart.time = null;	
+	this.chart.filter = null;
 
 	this.chart.tag = target;			// Leaflet target html id
 
 	this.chart.transformation = null;	// Stored for making D3 geo transformation of
 	this.chart.path = null;				// Leaflet objects
+
+	this.chart.animStartDate = null;
+	this.chart.animEndDate = null;
+	this.chart.animCurrDate = null;
+	this.chart.animState = 'stop';		// stop, play, pause
+	this.chart.playInterval = null;
+	this.chart.dimByDate = null;
 }
 
 /* Class methods */
@@ -116,6 +127,94 @@ Map.prototype = {
 		chart.pointInfo.addTo(map);
 	}, // end createInfoChart function
 
+	createTimeControl: function(){
+		var self = this,
+			chart = this.chart;
+
+		chart.time = L.control({position : 'bottomright'});
+		var map = chart.map;
+
+		chart.time.onAdd = function(map){
+			this._div = L.DomUtil.create('div', 'time');
+			this._div.innerHTML = '00/00/0000';
+			return this._div;
+		};
+
+		chart.time.update = function(date){
+			this._div.innerHTML = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+		};
+		chart.time.addTo(map);
+	},
+
+	play: function(filter, rate){
+		var self = this,
+			chart = this.chart;
+
+		d3.selectAll(".waypoints").style("display", "none");
+		d3.selectAll(".lineConnect").style("display", "none");
+
+		if (chart.animState == 'play'){
+			chart.animState = 'pause';
+			clearInterval(chart.playInterval);
+			chart.animStartDate = chart.animCurrDate; 
+		} else {
+			if (chart.animState == 'stop'){
+				chart.animStartDate = filter.initial_date;
+				chart.animEndDate = filter.final_date;
+				chart.animCurrDate = filter.initial_date;
+			} else { 
+				// On pause, I guess nothing special happens
+			}
+
+			chart.animState = 'play';
+			chart.playInterval = setInterval(function() {
+	        	chart.time.update(chart.animCurrDate);
+
+	        	/*
+	        	var filteredPoints = chart.filteredData.filter(
+	        		function(el) { 
+	        			return el.properties.timestamp.year == chart.animCurrDate.getFullYear() 
+						&& el.properties.timestamp.month == (chart.animCurrDate.getMonth() + 1) 
+						&& el.properties.timestamp.day == chart.animCurrDate.getDate();
+	        	});*/
+	        	// month starts at 0
+	        	
+	        	var tomorrow = new Date(chart.animCurrDate);
+				tomorrow.setDate(chart.animCurrDate.getDate() + 1);
+
+				chart.dimByDate.filterAll();
+				chart.dimByDate.filter([chart.animCurrDate, tomorrow]);
+				var da = chart.dimByDate.top(Infinity);
+
+	        	var g = d3.select("g");
+	        	g.selectAll(".animPoints").remove();
+	        	if (da.length > 0){
+	        		g.selectAll(".animPoints")
+	        			.data(da).enter() 
+	        			 .append("circle")
+			             .attr("r", 5)
+			             .attr("d", function(d){ return d; })
+			             .attr("class", "animPoints");
+			        self.reset();
+	        	};
+
+	            chart.animCurrDate.setDate(chart.animCurrDate.getDate() + 1);
+
+	            if (chart.animCurrDate > chart.animEndDate) {
+	                clearInterval(chart.playInterval);
+	            }
+        	}, rate);
+		};
+	},
+
+	stop: function(){
+		var self = this,
+			chart = this.chart;
+
+		chart.animState = 'stop';
+		clearInterval(chart.playInterval);
+	},
+
 	/* Adds the hurricanes to the different map layers based on the filter control.
 	   The data points are inserted as SVG circle elements. The paths are inserted
 	   independently between two data points per hurricane as it is needed to show
@@ -125,9 +224,10 @@ Map.prototype = {
 		var self = this,
 			chart = this.chart,
 			map = chart.map;
+		var ymdFormat = d3.time.format("%Y-%m-%d");
 
 		/* Remove any existing element in the map */
-		var g = chart.svgLineLayer.select("g");
+		var g = chart.svgDataLayer.select("g");
 
 		g.selectAll("circle").remove();
 		g.selectAll(".lineConnect").remove();
@@ -185,6 +285,21 @@ Map.prototype = {
 			}
 		}
 
+		chart.filteredData = filteredData;
+		// Sort and at dates for animation, check out the hour!!
+		chart.filteredData.sort(function(a,b){
+			return new Date(a.properties.timestamp.year, a.properties.timestamp.month, a.properties.timestamp.day,a.properties.timestamp.hour,a.properties.timestamp.minute,0,0).getTime() - 
+					new Date(b.properties.timestamp.year, b.properties.timestamp.month, b.properties.timestamp.day,b.properties.timestamp.hour,b.properties.timestamp.minute,0,0).getTime();
+		});
+		chart.filteredData.forEach(function(d){
+			d.properties.timestamp.date = ymdFormat.parse(d.properties.timestamp.year + "-" + 
+				d.properties.timestamp.month + "-" + d.properties.timestamp.day);
+		});
+		var cf = crossfilter(chart.filteredData);
+		chart.dimByDate = cf.dimension(function(d){
+			return d.properties.timestamp.date;
+		});
+
 		self.reset();
 
 		function projectPoint(x, y){
@@ -193,10 +308,14 @@ Map.prototype = {
 		};
 	}, // end addHurricane function
 
+	resetAnim: function(){
+
+	},
+
 	reset: function(){
 		var self = this,
 			chart = this.chart,
-			g = chart.svgLineLayer.select("g");
+			g = chart.svgDataLayer.select("g");
 
 		if (chart.path != null){
 			var bounds = chart.path.bounds(chart.data);
@@ -210,7 +329,14 @@ Map.prototype = {
 	                    self.applyLatLngToLayer(d).y + ")";
 	        });
 
-			chart.svgLineLayer.attr("width", bottomRight[0] - topLeft[0] + 20)
+			d3.selectAll(".animPoints").attr("transform",
+	            function(d) {
+	                return "translate(" +
+	                    self.applyLatLngToLayer(d).x + "," +
+	                    self.applyLatLngToLayer(d).y + ")";
+	        });
+
+			chart.svgDataLayer.attr("width", bottomRight[0] - topLeft[0] + 20)
 				.attr("height", bottomRight[1] - topLeft[1] + 50)
 				.style("left", (topLeft[0]) + "px")
 				.style("top", (topLeft[1]) + "px");
@@ -243,7 +369,49 @@ Map.prototype = {
 				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ';
 	
-		/* create mapbox map */
+		/* The Overlay classes are created to control the behaviour of D3 selections
+		   when a Leaflet overlay is selected and deselected */
+		var dataOverlay = L.Class.extend({
+			initialize: function(){ return; },
+			onAdd: function(map){
+				d3.selectAll(".waypoints").style("display", "block");
+			},
+			onRemove: function(map){
+				d3.selectAll(".waypoints").style("display", "none");
+			}
+		});
+
+		var pathOverlay = L.Class.extend({
+			//initialize: function(){ return; },
+			onAdd: function(map){
+				d3.selectAll(".lineConnect").style("display", "block");
+			},
+			onRemove: function(map){
+				d3.selectAll(".lineConnect").style("display", "none");
+			}
+		});
+
+		var heatmapOverlay = L.Class.extend({
+			//initialize: function(){ return; },
+			onAdd: function(map){
+				// TODO
+			},
+			onRemove: function(map){
+				// TODO
+			}
+		});
+
+		var hurrDataOverlay = new dataOverlay();
+		var hurrPathOverlay = new pathOverlay();
+		var hurrHeatmapOverlay = new heatmapOverlay();
+
+		/* Three LayerGroups are created for storing the overlays. This is
+		   needed to allow the overlay checkboxes to start as checked */
+		var lGroupData = new L.LayerGroup().addLayer(hurrDataOverlay);
+		var lGroupPath = new L.LayerGroup().addLayer(hurrPathOverlay);
+		var lGroupHeatmap = new L.LayerGroup().addLayer(hurrHeatmapOverlay);
+
+		/* Set the mapbox base layers */
 		var grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
 			darkscale = L.tileLayer(mbUrl, {id: 'mapbox.dark', attribution: mbAttr}),
 			streets = L.tileLayer(mbUrl, {id: 'mapbox.streets', attribution: mbAttr});
@@ -251,7 +419,7 @@ Map.prototype = {
 		chart.map = new L.map(chart.tag, { 
 			center: [29.224568, -67.862114], 
 			zoom: 4,
-			layers: [grayscale]
+			layers: [grayscale, lGroupData, lGroupPath] // checked layers
 		});
 
 		var baseLayers = {
@@ -260,30 +428,23 @@ Map.prototype = {
 			"Streets": streets
 		};
 
-		var lineLayer = L.Class.extend({
-			initialize: function(){ return; },
-			onAdd: function(map){
-				chart.svgLineLayer.style("display", "block");
-			},
-			onRemove: function(map){
-				chart.svgLineLayer.style("display", "none");
-			}
-		});
-
-		var hurrLineLayer = new lineLayer();
-		var overlays = {};
-		overlays["Line Layer"] = hurrLineLayer;
+		var overlays = {
+			"Data Layer": hurrDataOverlay,
+			"Paths": hurrPathOverlay,
+			"Heatmap": hurrHeatmapOverlay
+		};
 
 		L.control.layers(baseLayers, overlays).addTo(chart.map);
 
-		chart.svgLineLayer = d3.select(chart.map.getPanes().overlayPane).append("svg");
-		var g = chart.svgLineLayer.append("g").attr("class", "leaflet-zoom-hide");
+		chart.svgDataLayer = d3.select(chart.map.getPanes().overlayPane).append("svg");
+		var gData = chart.svgDataLayer.append("g").attr("class", "leaflet-zoom-hide");
 
 		chart.map.on("viewreset", function(){
 			self.reset();
 		});
 
 		self.createInfoChart();
+		self.createTimeControl();
 	} // end init function
 }
 
