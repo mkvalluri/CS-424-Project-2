@@ -70,6 +70,32 @@ Map.prototype = {
 			return "TD";
 	}, // end getHurricaneCategory function
 
+	/* Returns the number of meters per pixel shown on a map 
+	   on a given zoom level */
+	getDensityPerZoomLevel: function(zoomLevel){
+		if (zoomLevel == 0) return 156412;
+		else if (zoomLevel == 1) return 78206;
+		else if (zoomLevel == 2) return 39103;
+		else if (zoomLevel == 3) return 19551;
+		else if (zoomLevel == 4) return 9776;
+		else if (zoomLevel == 5) return 4888;
+		else if (zoomLevel == 6) return 2444;
+		else if (zoomLevel == 7) return 1222;
+		else if (zoomLevel == 8) return 610.984;
+		else if (zoomLevel == 9) return 305.492;
+		else if (zoomLevel == 10) return 152.746;
+		else if (zoomLevel == 11) return 76.373;
+		else if (zoomLevel == 12) return 38.187;
+		else if (zoomLevel == 13) return 19.093;
+		else if (zoomLevel == 14) return 9.547;
+		else if (zoomLevel == 15) return 4.773;
+		else if (zoomLevel == 16) return 2.387;
+		else if (zoomLevel == 17) return 1.193;
+		else if (zoomLevel == 18) return 0.596;
+		else if (zoomLevel == 19) return 0.298;
+		else return 0;
+	},
+
 	/* Shows an information chart on the bottom left section of the map. The object
 	   is stored as a Leaflet Control and updates its information everytime the 
 	   user hovers on a data point. */
@@ -187,17 +213,14 @@ Map.prototype = {
 				var da = chart.dimByDate.top(Infinity);
 
 	        	var g = d3.select("g");
-	        	g.selectAll(".animPoints").remove();
+	        	var zoomLevel = chart.map.getZoom();
+	        	g.selectAll(".animpoints").remove();
 	        	if (da.length > 0){
-	        		g.selectAll(".animPoints")
-	        			.data(da).enter() 
-	        			 .append("circle")
-			             .attr("r", 5)
-			             .attr("d", function(d){ return d; })
-			             .attr("class", "animPoints");
-			        self.reset();
-	        	};
-
+	        		self.addWindPoints(g, da, "q34", zoomLevel);
+	        		self.addWindPoints(g, da, "q50", zoomLevel);
+	        		self.addWindPoints(g, da, "q64", zoomLevel);
+	        		self.reset();
+	        	}
 	            chart.animCurrDate.setDate(chart.animCurrDate.getDate() + 1);
 
 	            if (chart.animCurrDate > chart.animEndDate) {
@@ -205,6 +228,28 @@ Map.prototype = {
 	            }
         	}, rate);
 		};
+	},
+
+	addWindPoints: function(group, data, type, zoomLevel){
+		var self = this;
+		var w = null;
+
+		group.selectAll("." + type)
+			.data(data).enter() 
+			 .append("circle")
+             .attr("r", function(d){
+             	if (type == "q34") w = d.properties.q34;
+             	else if (type == "q50") w = d.properties.q50;
+             	else if (type == "q64") w = d.properties.q64;
+             	avg = (w.ne + w.se + w.nw + w.sw)/4;
+             	if (avg == 0) return 5;
+             	else{
+             		return (avg * 1.82 * 1000)/self.getDensityPerZoomLevel(zoomLevel);
+             	}
+             })
+             .attr("d", function(d){ return d; })
+             .attr("class", type)
+             .classed("animpoints", true);		
 	},
 
 	stop: function(){
@@ -329,7 +374,7 @@ Map.prototype = {
 	                    self.applyLatLngToLayer(d).y + ")";
 	        });
 
-			d3.selectAll(".animPoints").attr("transform",
+			d3.selectAll(".animpoints").attr("transform",
 	            function(d) {
 	                return "translate(" +
 	                    self.applyLatLngToLayer(d).x + "," +
