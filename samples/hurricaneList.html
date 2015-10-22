@@ -35,7 +35,10 @@
     <script src="../js/bootstrap.min.js"></script>
 	<script>
 		var barChart = null;
-		var d = new DataAccess();
+		var d = new HurricaneList();
+		d3.json("../resources/filteredData.json", function(error, data) {
+			d.loadFilteredData(data, "#atlanticList");
+		});
 		d.init();
 	</script>
 </body>

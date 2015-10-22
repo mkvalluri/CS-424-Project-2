@@ -1,11 +1,11 @@
-function DataAccess() {
+function HurricaneList() {
 	this.data = null;
 	this.filteredData = null;
 	this.hurricaneListNames_AL = null;
 	this.hurricaneListNames_PA = null;
 }
 
-DataAccess.prototype = {
+HurricaneList.prototype = {
 	
 	/*init: function() {
 		d3.json("../resources/filteredData.json", this.loadFilteredData);
