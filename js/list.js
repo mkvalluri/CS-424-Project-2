@@ -1,5 +1,4 @@
-function DataAccess()
-{
+function DataAccess() {
 	this.data = null;
 	this.filteredData = null;
 	this.hurricaneListNames_AL = null;
@@ -8,50 +7,33 @@ function DataAccess()
 
 DataAccess.prototype = {
 	
-	init: function() {
+	/*init: function() {
 		d3.json("../resources/filteredData.json", this.loadFilteredData);
-	},
-	
-	loadFilteredData: function(error, collection) {
+	},*/
+
+	//This function is called to populate the container with data.
+	//divId = Container ID
+	//collection = Data to be loaded 
+	loadFilteredData: function (collection, divId) {
 		this.hurricaneListNames = collection;
 		console.log("Loaded Hurricane List Names");
 		var sortedList = this.hurricaneListNames.sort(sortListByName);
-
-		/*
-		$.each(sortedList, function(key, value) {
-			var htmlStr = "<div class='col-md-4'><a id='" + value.id + "' class='nameLink'>" +
-							value.basin + " - " + value.name + " - " + value.year + "</a></div>";
-			//if(value.basin == 'AL')
-  				$("#atlanticList").append(htmlStr);
-		//	else
-		//		$("#pacificList").append(htmlStr);
-		}); */
-
-
-
-		loadDivContainer(sortedList);
-	}	
+		loadDivContainer(sortedList, divId);
+	}
 }
 
-function loadDivContainer(data) {
-			var container = d3.select("#atlanticList");
-		container.selectAll(".nameLink").remove();
+function loadDivContainer(data, divId) {
+	var container = d3.select(divId);
+	container.selectAll(".nameLink").remove();
 
-		container.selectAll(".nameLink").data(data)
-			.enter().append("div")
-			.html(function(d){
-				return "<div class='col-md-4'>" +
-						"<a id='" + d.id + "' class='nameLink'>" +
-							d.basin + " - " + d.name + " - " + d.year + 
-						"</a></div>";
-			});
-
-/*	$.each(data, function(key, value) {
-			var htmlStr = "<div class='col-md-3'><a id='" + value.id + "' class='nameLink'>" +
-						 	value.basin + " - " + value.name + " - " + value.year + "</a></div>";
-			$("#atlanticList").append(htmlStr);
+	container.selectAll(".nameLink").data(data)
+		.enter().append("div")
+		.html(function (d) {
+			return "<div class='col-md-4'>" +
+				"<a id='" + d.id + "' class='nameLink'>" +
+				d.basin + " - " + d.name + " - " + d.year +
+				"</a></div>";
 		});
-*/
 };
 
 function sortListByYear(a, b) {
