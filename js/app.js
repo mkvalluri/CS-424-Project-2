@@ -2,7 +2,9 @@ function App(){
 	this.map = null;
 	this.bchartAtlantic = null;
 	this.bchartPacific = null;
+	this.reducedData = null;
 
+	this.repository = new Repository();
 	this.mapFilter = {};
 	this.barFilter = {};
 }
@@ -21,7 +23,7 @@ App.prototype = {
 	},
 
 	search: function(){
-		var self = this;
+		var self = this;	
 
 		if ($('#chk-search-name').is(":checked")){
 			self.mapFilter.type = "name";
@@ -36,6 +38,27 @@ App.prototype = {
 			self.mapFilter.max_pressure = $('#max-pressure').val();
 		};
 
+		// Data for filling the list items
+		var reducedData = self.repository.searchInReducedData(self.reducedData, self.mapFilter);
+		var list = new DataAccess();
+		list.loadFilteredData(null, reducedData);
+		d3.selectAll(".nameLink").on("click", function(d){
+			var hurrId = $(this).attr('id');
+			var paths = d3.selectAll("." + hurrId).style("opacity",1);
+			var dataPoints = d3.selectAll(".waypoints").filter(function(d){ return d.properties.id == hurrId });
+
+			if ($(this).hasClass('linkHideHurricane')){
+				paths.style("opacity",1);
+				dataPoints.style("opacity",1);
+				$(this).removeClass("linkHideHurricane");
+			} else {
+				paths.style("opacity",0);
+				dataPoints.style("opacity",0);
+				$(this).addClass("linkHideHurricane");
+			}
+		});
+		
+		// Add the data to the maps
 		self.map.addHurricane(self.mapFilter);
 	},
 
@@ -144,6 +167,7 @@ App.prototype = {
 
 				self.bchartAtlantic.init();
 				self.bchartPacific.init();
+				self.reducedData = data;
 
 				self.search();
 			});

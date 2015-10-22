@@ -405,8 +405,10 @@ Map.prototype = {
 					     	for(var i = 0; i < d.length; i++)
 					     		p = p + toLine(d[i]) + ",";
 					     	hurrCat = self.getHurricaneCategory(d[0][0].properties.maxwind);
-					     	d3.select(this).attr("d", p);
-					     	d3.select(this).classed("line"+hurrCat, true);
+					     	d3.select(this)
+					     	  .attr("d", p)
+					     	  .classed("line"+hurrCat, true)
+					     	  .classed(d[0][0].properties.id, true);
 					     })
 		}
 	}, // end reset function

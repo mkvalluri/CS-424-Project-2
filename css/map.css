@@ -21,7 +21,7 @@
 	color: white;
 }
 .waypoints {
-    fill: rgba(214,38,255,0.5);
+    fill: rgba(214,38,255,1);
 }
 .waypoints-selected {
     fill: rgba(214,38,255,1);
