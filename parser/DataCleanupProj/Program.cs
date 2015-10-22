@@ -11,10 +11,12 @@ namespace DataCleanupProj
         static string finalData = "";
         static DataWrapper outputData;
         static List<FilteredData> filteredData;
+        static List<HurricaneName> hurricaneNames;
         static void Main(string[] args)
         {
             outputData = new DataWrapper();
             filteredData = new List<FilteredData>();
+            hurricaneNames = new List<HurricaneName>();
 
             var data = File.ReadAllLines(@"D:\Projects\hurdat2-1851-2014-060415.txt");
             var data2 = File.ReadAllLines(@"D:\Projects\hurdat2-nencpac-1949-2014-092515.txt");
@@ -23,9 +25,11 @@ namespace DataCleanupProj
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.NullValueHandling = NullValueHandling.Ignore;
             finalData = JsonConvert.SerializeObject(outputData, settings);
-            File.WriteAllText(@"D:\Projects\data.json", finalData);
+            //File.WriteAllText(@"D:\Projects\data.json", finalData);
             finalData = JsonConvert.SerializeObject(filteredData, settings);
-            File.WriteAllText(@"D:\Projects\filteredData.json", finalData);
+            //File.WriteAllText(@"D:\Projects\filteredData.json", finalData);
+            string str = JsonConvert.SerializeObject(hurricaneNames, settings);
+            File.WriteAllText(@"D:\Projects\hurricaneListNames.json", str);
             Console.ReadLine();
         }
 
@@ -51,9 +55,12 @@ namespace DataCleanupProj
             foreach (var line in data)
             {
                 Feature tempFeature = new Feature();
+                HurricaneName hurricaneName = new HurricaneName();
                 var tempLines = line.Split(new char[] { ',' });
                 if (Regex.IsMatch(line, @"^\d"))
                 {
+                    //if(!hurricaneNames.Exists(h => h.Name == hurricaneName.Name))
+                        
                     tempFeature.properties.name = name;
                     tempFeature.properties.id = id;
                     tempFeature.properties.basin = basin;
@@ -93,6 +100,11 @@ namespace DataCleanupProj
                 {
                     if(count > 0)
                     {
+                        hurricaneName.Name = name + " - " + year;
+                        hurricaneName.Id = id;
+                        hurricaneName.TimeStamp = year.ToString();
+                        hurricaneNames.Add(hurricaneName);
+
                         wAvg /= count;
                         pAvg /= count;
                         tempFilteredData = new FilteredData();
@@ -136,10 +148,10 @@ namespace DataCleanupProj
         static Quarter GetQuarter(string ne, string se, string sw, string nw)
         {
             Quarter q = new Quarter();
-            q.ne = Convert.ToInt64(ne);
-            q.se = Convert.ToInt64(se);
-            q.sw = Convert.ToInt64(sw);
-            q.nw = Convert.ToInt64(nw);
+            q.ne = Convert.ToInt64(ne) == -999 ? 0 : Convert.ToInt64(ne);
+            q.se = Convert.ToInt64(se) == -999 ? 0 : Convert.ToInt64(se);
+            q.sw = Convert.ToInt64(sw) == -999 ? 0 : Convert.ToInt64(sw);
+            q.nw = Convert.ToInt64(nw) == -999 ? 0 : Convert.ToInt64(nw);
             return q;
         }
     }
