@@ -7,10 +7,6 @@ function HurricaneList() {
 
 HurricaneList.prototype = {
 	
-	/*init: function() {
-		d3.json("../resources/filteredData.json", this.loadFilteredData);
-	},*/
-
 	//This function is called to populate the container with data.
 	//divId = Container ID
 	//collection = Data to be loaded 
@@ -23,17 +19,13 @@ HurricaneList.prototype = {
 }
 
 function loadDivContainer(data, divId) {
-	var container = d3.select(divId);
-	container.selectAll(".nameLink").remove();
+	$(divId).html("");
 
-	container.selectAll(".nameLink").data(data)
-		.enter().append("div")
-		.html(function (d) {
-			return "<div class='col-md-4'>" +
-				"<a id='" + d.id + "' class='nameLink'>" +
-				d.basin + " - " + d.name + " - " + d.year +
-				"</a></div>";
-		});
+	$.each(data, function (key, value) {
+		var htmlStr = "<div class='col-md-2'><a id='" + value.id + "' class='nameLink'>" +
+			value.basin + " - " + value.name + " - " + value.year + "</a></div>";
+		$(divId).append(htmlStr);
+	});
 };
 
 function sortListByYear(a, b) {
