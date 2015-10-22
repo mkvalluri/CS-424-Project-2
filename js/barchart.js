@@ -231,8 +231,9 @@ BarChart.prototype = {
 
 	init: function(){
 		var self = this,
-			bar  = this.chart,
-			canvasWidth  = d3.select(bar.tag).style("width"),
+			bar  = this.chart;
+
+		var	canvasWidth  = d3.select(bar.tag).style("width"),
 		    canvasHeight = d3.select(bar.tag).style("height");
 
 		/* Set the canvas size based on mbostock's best practices */

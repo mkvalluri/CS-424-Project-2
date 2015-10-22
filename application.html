@@ -1,47 +1,118 @@
 <!-- index.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>CS 424 - Project #2</title>
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css"> <!-- custom styles -->
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" />
+    
+    <link rel="stylesheet" href="css/app.css">  <!-- custom styles -->
+    <link rel="stylesheet" href="css/map.css">  
+    <link rel="stylesheet" href="css/bar.css">  
+
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+
+    <script type="text/javascript" src="js/barchart.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-3 col-md-offset-1 text-left">
-                <!-- Header Portion -->    
-                <h1>CS 424 - Project #1</h1>
+    <!-- Defining container and then row which would wrap the entire body -->
+    <div class="main-wrapper">      
+        <div class="col-1">
+            <div id="bc-container-nohurrAL" class="control1-3"></div>
+            <div id="bc-container-nohurrPA" class="control1-3"></div>
+            <hr/><br/>
+            <div class="control1-3 filters">
+                <form class="form-inline" role="form">
+                    <div class="input-group" style="width:100%">
+                        <span class="input-group-addon group-checkbox">
+                            <input id="chk-search-name" type="radio">
+                        </span>
+                        <span class="input-group-addon form-label" id="addon-hurr-name">Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <input type="text" class="form-control form-label" id="hurr-name" aria-describedby="addon-hurr-name">
+                    </div>
+
+                    <div class="input-group" style="width:100%">
+                        <span class="input-group-addon group-checkbox"><input id="chk-search-others" type="radio" checked="true"></span>
+                        <span class="input-group-addon form-label" id="addon-dates">Dates&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <input type="text" class="form-control form-label" id="initial-date" placeholder="mm/dd/yyyy" value="05/01/2014" data-date-format="mm/dd/yyyy" style="width:50%">
+                        <input type="text" class="form-control form-label" id="final-date" placeholder="mm/dd/yyyy" value="12/01/2014" data-date-format="mm/dd/yyyy" style="width:50%">
+                    </div>
+                    <div class="input-group" >
+                        <span class="input-group-addon group-checkbox"></span>
+                        <span class="input-group-addon form-label" id="addon-landfall">Landfall&nbsp;</span>
+                        <div id="dashboard-control-1" class="btn-group btn-group-justified" role="group">
+                            <div class="btn-group" role="group">
+                                <button type="button" id="btn-landfall-all" class="btn btn-primary btn-lg form-label btn-landfall">All</button>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" id="btn-landfall-yes" class="btn btn-default btn-lg form-label btn-landfall">Yes</button>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" id="btn-landfall-no" class="btn btn-default btn-lg form-label btn-landfall">No</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group" style="width:100%">
+                        <span class="input-group-addon group-checkbox"></span>
+                        <span class="input-group-addon form-label" id="addon-wind">Wind&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <input type="text" class="form-control form-label form-wind" id="min-wind" aria-describedby="addon-wind" value="0" style="width:50%"></input>
+                        <input type="text" class="form-control form-label form-wind" id="max-wind" aria-describedby="addon-wind" value="200" style="width:50%"></input>
+                    </div>
+                    <div class="input-group" style="width:100%">
+                        <span class="input-group-addon group-checkbox"></span>
+                        <span class="input-group-addon form-label" id="addon-pressure">Pressure</span>
+                        <input type="text" class="form-control form-label form-wind" id="min-pressure" aria-describedby="addon-pressure" value="0" style="width:50%"></input>
+                        <input type="text" class="form-control form-label form-wind" id="max-pressure" aria-describedby="addon-pressure" value="2000" style="width:50%"></input>
+                    </div>
+                    <div id="dashboard-control-1" class="btn-group btn-group-justified" role="group">
+                        <div class="btn-group" role="group">
+                            <button type="button" id="btn-reset" class="btn btn-default">Reset</button>
+                        </div>
+                       <div class="btn-group" role="group">
+                            <button type="button" id="btn-search" class="btn btn-primary">Show</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>                
-    <hr>
-    <!-- Body Portion -->
-    <!-- Defining container and then row which would wrap the entire body -->
-    <div class="container-fluid text-center">      
-        <div class="row">
-            <div class="col-md-1 col-md-offset-1 text-left">
-                <ul class="nav nav-pills nav-stacked text-right">
-                    <li role="presentation"><a href="index.html">Home</a></li>
-                    <li role="presentation"><a href="features.html">Features</a></li>
-                    <li role="presentation" class="active"><a href="application.html">Application</a></li>
-                    <li role="presentation"><a href="sourcecode.html">Source Code</a></li>
-                    <li role="presentation"><a href="observations.html">Observations</a></li>
-                </ul>
-                <hr>  
+        <div class="col-2">
+            <div id="map-container" class="map"></div>
+            <div id="anim-container">
+                <img id='btnplay' class='btn-animation' src='./resources/play128white.png' alt="play">
+                <img id='btnstop' class='btn-animation' src='./resources/stop4white.png'>
+                <input id='frame-rate' type='number' min="20" max="1000" value="20" />
             </div>
-        </div>  
-        
-        <hr>
-        <footer class="text-center">
-            <h5>&copy; Murali Krishna Valluri 2015</h5>
-        </footer>
+        </div>
+        <div class="col-3">
+            <div class="control1-2">
+                <span class="ui-icon ui-icon-play"></span>
+            </div>
+            <div class="control1-2"></div>
+        </div>
+        <div class="col-4">
+            <div class="control1-2"></div>
+            <div class="control1-2"></div>
+        </div>
     </div>
-<script src="js/jquery-2.1.4.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        var app = new App();
+        app.init();
+    </script>
 </body>
 </html>

@@ -130,7 +130,7 @@ https://en.wikipedia.org/wiki/Saffir%E2%80%93Simpson_hurricane_wind_scale
 		var hurricaneMap = null;
 
 		d3.json("../resources/data.json", function(error, collection){
-			hurricaneMap = new Map(collection, "map");
+			hurricaneMap = new Map(collection, "map", 5);
 			hurricaneMap.init();
 		});
 

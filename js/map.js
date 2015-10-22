@@ -12,12 +12,13 @@
 */
 
 /* Class constructor and attributes */
-function Map(data, target){
+function Map(data, target, zoomLevel){
 	this.chart = {};
 
 	this.chart.data = data;				// Holds all the NHC dataset
 	this.chart.filteredData = null;
 
+	this.chart.initZoom = zoomLevel;
 	this.chart.map = null;				// Leaflet map object
 	this.chart.svgDataLayer = null;		// Data overlay layer
 	this.chart.svgPathLayer = null;		// Path overlay layer
@@ -110,7 +111,7 @@ Map.prototype = {
 		// TODO: Hide?
 		chart.pointInfo.onAdd = function(map){
 			this._div = L.DomUtil.create('div', 'info');
-			this._div.innerHTML = '<h4>Path Information</h4>';
+			this._div.innerHTML = '<h4><span class="default-info">Choose a data point to see path information</span></h4>';
 			return this._div;
 		};
 
@@ -162,12 +163,16 @@ Map.prototype = {
 
 		chart.time.onAdd = function(map){
 			this._div = L.DomUtil.create('div', 'time');
-			this._div.innerHTML = '00/00/0000';
+			this._div.innerHTML = 
+				"<div>"+ 
+					"<span class='time-label'></span>" +
+				"</div>";
+
 			return this._div;
 		};
 
 		chart.time.update = function(date){
-			this._div.innerHTML = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+			this._div.innerHTML ="<span class='time-label'>" + (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + "</span>";
 		};
 		chart.time.addTo(map);
 	},
@@ -212,7 +217,7 @@ Map.prototype = {
 				chart.dimByDate.filter([chart.animCurrDate, tomorrow]);
 				var da = chart.dimByDate.top(Infinity);
 
-	        	var g = d3.select("g");
+	        	var g = chart.svgDataLayer.select("g");
 	        	var zoomLevel = chart.map.getZoom();
 	        	g.selectAll(".animpoints").remove();
 	        	if (da.length > 0){
@@ -279,19 +284,20 @@ Map.prototype = {
 
 		var filteredData = chart.data.features.filter(
 			function(el) { 
-				dateFilter = el.properties.timestamp.year >= filter.initial_date.getFullYear() 
-						&& el.properties.timestamp.month >= (filter.initial_date.getMonth() + 1) 
-						&& el.properties.timestamp.year <= filter.final_date.getFullYear() 
-						&& el.properties.timestamp.month <= (filter.final_date.getMonth() + 1);
-				if (filter.name != '') 
-					return dateFilter && el.properties.name == filter.name;
-				else
-					return dateFilter;
-			} //&& el.basin == basin 
+				if (filter.type == "name"){
+					return el.properties.name == filter.name;
+				}else{
+					return  el.properties.timestamp.year >= filter.initial_date.getFullYear() 
+							&& el.properties.timestamp.month >= (filter.initial_date.getMonth() + 1) 
+							&& el.properties.timestamp.year <= filter.final_date.getFullYear() 
+							&& el.properties.timestamp.month <= (filter.final_date.getMonth() + 1)
+							&& el.properties.maxwind >= filter.min_wind
+							&& el.properties.maxwind <= filter.max_wind
+							&& el.properties.minpressure >= filter.min_pressure
+							&& el.properties.minpressure <= filter.max_pressure;
+				}
+			}
 		);
-
-		/* 
-		*/
 
 		chart.transform = d3.geo.transform({point: projectPoint});
 		chart.path = d3.geo.path().projection(chart.transform);
@@ -462,9 +468,9 @@ Map.prototype = {
 			streets = L.tileLayer(mbUrl, {id: 'mapbox.streets', attribution: mbAttr});
 
 		chart.map = new L.map(chart.tag, { 
-			center: [29.224568, -67.862114], 
-			zoom: 4,
-			layers: [grayscale, lGroupData, lGroupPath] // checked layers
+			center: [20.587016, -88.175590], 
+			zoom: chart.initZoom,
+			layers: [darkscale, lGroupData, lGroupPath] // checked layers
 		});
 
 		var baseLayers = {
@@ -493,6 +499,21 @@ Map.prototype = {
 	} // end init function
 }
 
+
+
+		/* tried to disable the propagation on the control but didn't work
+		chart.time.initialize = function(map){
+			L.DomEvent.disableClickPropagation(char.timet);
+		};
+		function controlEnter(e) {
+		    map.dragging.disable();
+		}
+		function controlLeave() {
+		    map.dragging.enable();
+		}
+
+		//chart.time.onmouseover = controlEnter;
+		//chart.time.onmouseout = controlLeave;*/
 
 
 		/*

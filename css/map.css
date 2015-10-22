@@ -1,0 +1,105 @@
+.info {
+	height: 80px;
+	width: 450px;
+	padding: 6px 8px;
+	font: 16px/18px Arial, Helvetica, sans-serif;
+	background: black;
+	background: rgba(0,0,0,0.8);
+	box-shadow: 0 0 15px rgba(0,0,0,0.2);
+	border-radius: 5px;
+	color: white;
+}
+.time {
+	height: 40px;
+	width: 100px;
+	padding: 6px 8px;
+	font: 16px/18px Arial, Helvetica, sans-serif;
+	background: black;
+	background: rgba(0,0,0,0.8);
+	box-shadow: 0 0 15px rgba(0,0,0,0.2);
+	border-radius: 5px;
+	color: white;
+}
+.waypoints {
+    fill: rgba(214,38,255,0.5);
+}
+.waypoints-selected {
+    fill: rgba(214,38,255,1);
+}
+.lineConnect {
+    fill: none;
+    stroke: rgba(214,38,255,0.8);
+}
+.lineTD {
+	stroke-width:1;
+	stroke: rgba(153,216,201,0.8);
+}
+.lineTS {
+	stroke-width:2;
+	stroke: rgba(44,162,95,0.8);
+}
+.lineH1 {
+	stroke-width:3;
+	stroke: rgba(255,255,178,0.8);
+}	
+.lineH2 {
+	stroke-width:4;
+	stroke: rgba(254,204,92,0.8);
+}	
+.lineH3 {
+	stroke-width:5;
+	stroke: rgba(253,141,60,0.8);
+}	
+.lineH4 {
+	stroke-width:6;
+	stroke: rgba(240,59,32,0.8);
+}	
+.lineH5 {
+	stroke-width:7;
+	stroke: rgba(189,0,38,0.8);
+}	
+svg {
+	  position: relative;
+}
+.q34{
+	fill: rgba(255,237,160,0.5);
+}
+.q50{
+	fill: rgba(254,178,76,0.5);
+}
+.q64{
+	fill: rgba(240,59,32,0.5);
+}
+
+@media only screen and (min-width: 8000px) {
+	.info {
+		height: 200px;
+		width: 1400px;
+		padding: 20px 30px;
+		font: 50px Arial, Helvetica, sans-serif;
+		background: black;
+		background: rgba(0,0,0,0.8);
+		box-shadow: 0 0 30px rgba(0,0,0,0.2);
+		border-radius: 15px;
+		color: white;
+	}
+	.time {
+		height: 200px;
+		width: 500px;
+		padding: 20px 30px;
+		font: 60px Arial, Helvetica, sans-serif;
+		background: black;
+		background: rgba(0,0,0,0.8);
+		box-shadow: 0 0 40px rgba(0,0,0,0.2);
+		border-radius: 20px;
+		color: white;
+	}
+	.time-label{
+		vertical-align: middle;
+		display: inline-block;
+		padding: 20px;
+	}
+	.default-info{
+		font-size: 50px;
+	}
+}
