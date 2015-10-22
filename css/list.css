@@ -1,0 +1,12 @@
+
+/***********************************
+List
+***********************************/
+#pacificList, #atlanticList {
+  height: 20em;
+  overflow-y: scroll;  
+}
+
+.nameLink:hover {
+  cursor: pointer;
+}
