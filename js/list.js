@@ -1,8 +1,7 @@
 function HurricaneList() {
 	this.data = null;
-	this.filteredData = null;
-	this.hurricaneListNames_AL = null;
-	this.hurricaneListNames_PA = null;
+	this.sortBy = "name";
+	this.sortByAscending = "true";
 }
 
 HurricaneList.prototype = {
@@ -11,11 +10,27 @@ HurricaneList.prototype = {
 	//divId = Container ID
 	//collection = Data to be loaded 
 	loadFilteredData: function (collection, divId) {
-		this.hurricaneListNames = collection;
-		console.log("Loaded Hurricane List Names");
-		var sortedList = this.hurricaneListNames.sort(sortListByName);
+		this.data = collection;
+		this.filterData(divId, this.sortBy, this.sortByAscending);
+	},
+	
+	filterData : function (divId, sortBy, sortByAscending)
+	{
+		var sortedList = null;
+		console.log(divId);
+		console.log(sortBy);
+		console.log(sortByAscending);
+		if(sortBy == "name")
+			sortedList = this.data.sort(sortListByName);
+		else if(sortBy == "year")
+			sortedList = this.data.sort(sortListByYear);
+		else if(sortBy == "wind")
+			sortedList = this.data.sort(sortListByWindSpeed);
+		if(sortByAscending != "true")
+			sortedList.reverse();
 		loadDivContainer(sortedList, divId);
 	}
+	
 }
 
 function loadDivContainer(data, divId) {
@@ -23,7 +38,7 @@ function loadDivContainer(data, divId) {
 
 	$.each(data, function (key, value) {
 		var htmlStr = "<div class='col-md-2'><a id='" + value.id + "' class='nameLink'>" +
-			value.basin + " - " + value.name + " - " + value.year + "</a></div>";
+			value.name + " - " + value.year + "</a></div>";
 		$(divId).append(htmlStr);
 	});
 };

@@ -1,20 +1,23 @@
 <!DOCTYPE.. html>
 <html lang="en">
+
 <head>
 	<!-- Bootstrap *must* tags -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>CS424-Project 2: Hurricane List</title>
-	
-	<script type="text/javascript" src="../js/d3.min.js"></script>  <!-- D3 -->
-	<script type="text/javascript" src="../js/list.js"></script> <!-- Data Access -->
 
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/list.css">
+	<script type="text/javascript" src="../js/d3.min.js"></script>
+	<!-- D3 -->
+	<script type="text/javascript" src="../js/list.js"></script>
+	<!-- Data Access -->
+
+	<link rel="stylesheet" href="../css/bootstrap.min.css">
+	<link rel="stylesheet" href="../css/list.css">
 	<style>
-		
+
 	</style>
 </head>
 
@@ -24,20 +27,52 @@
 			<div class="col-md-12">
 				<div class="panel panel-default">
 					<div class="panel-heading"><b>Atlantic Basin</b></div>
-					<div class="panel-body"  id="atlanticList" class="listPanel">
-						
+					<div class="panel-body" id="atlanticList" class="listPanel">
+
 					</div>
+					<div class="panel-footer">
+						<div class="col-md-2">
+							<b>Sort By: </b>
+							<select class="form-control listFilter" id="atlanticListFilter_1">
+								<option value="name" selected>Name</option>
+								<option value="year">Year</option>
+								<option value="wind">Wind</option>
+							</select>
+							
+							<b>Sort Order: </b>
+							<select class="form-control listFilterBy" id="atlanticListFilter_2">
+								<option value="true" selected>Ascending</option>
+								<option value="false">Descending</option>
+							</select>
+						</div>
+					</div>
+
 				</div>
 			</div>
 		</div>
 	</div>
-    <script src="../js/jquery-2.1.4.min.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
+	<script src="../js/jquery-2.1.4.min.js"></script>
+	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		var barChart = null;
 		var d = new HurricaneList();
 		d3.json("../resources/filteredData.json", function(error, data) {
 			d.loadFilteredData(data, "#atlanticList");
+		});
+		
+		$('.listFilter').change(function(){
+			var containerId = "#" + $(this).attr('id').slice(0, -8);
+			console.log(containerId);
+			var sortBy = $(this).val();
+			var sortByOrder = $(containerId + "Filter_2").val();
+			d.filterData(containerId, sortBy, sortByOrder);
+		});
+		
+		$('.listFilterBy').change(function(){
+			var containerId = "#" + $(this).attr('id').slice(0, -8);
+			var sortBy = $(containerId + "Filter_1").val();
+			var sortByAsending = $(this).val();
+			d.filterData(containerId, sortBy, sortByAsending);
 		});
 	</script>
 </body>
