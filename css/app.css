@@ -140,27 +140,31 @@ body {
 		height:95%;
 	}
 	.main-wrapper{
-		height: 1988px;
+		height: 2180px;
 		margin: auto;
 	}
 	.col-1{
 		float: left;
-		width: 1366px;
+		/*width: 1366px;*/
+		width: 16.66666667%;
 		height: 100%;
 	}
 	.col-2{
 		float: left;
-		width: 4102px;
+		/*width: 4102px;*/
+		width: 50%;
 		height: 100%;
 	}
 	.col-3{
 		float: left;
-		width: 1366px;
+		width: 16.66666667%;
+		/*width: 1366px;*/
 		height: 100%;
 	}
 	.col-4{
 		float: right;
-		width: 1366px;
+		/*width: 1366px;*/
+		width: 16.6666666%;
 		height: 100%;
 	}
 
