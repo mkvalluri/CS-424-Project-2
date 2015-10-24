@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>CS424-Project 2: Barchart sample page</title>
-	
+	<script src="../js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="../js/d3.min.js"></script>  <!-- D3 -->
-	<script type="text/javascript" src="../js/barchart.js"></script> <!-- Barchart -->
+	<script type="text/javascript" src="../js/graph.js"></script> <!-- Barchart -->
 
 	<style>
 		#bar-container{
@@ -28,10 +28,11 @@
 			font-size: 11px;
 		}
 		.bar_rect{
-			fill: red;
+			fill: #1f77b4;
 		}
 		.bar_rect:hover{
-			fill: black;
+			fill: #ff7f0e;
+			cursor: pointer;
 		}
 		.chart-title{
 			font-family: sans-serif;
@@ -68,32 +69,43 @@
 
 <body>
 	<div>
-		Year 1:<input type="text" name="year1" id="year1" value="1950"><br/>
-		Year 2:<input type="text" name="year2" id="year2" value="2010">
-		<input type="submit" value="Update" onclick="update();"><br/>
+		Basin: <select id="basin" class="filter">
+			<option value="both">Both</option>
+			<option value="AL">Atlantic</option>
+			<option value="EP">Pacific</option>
+			</select>
+		Max Wind:<input type="text" id="maxwind" class="filter"><br/>
+		Min Pressure:<input type="text" id="minpres" class="filter">
 	</div>
 	<div id="bar-container"></div>
 	
 	<script>
 		var barChart = null;
-		d3.json("../resources/filteredData.json", function(err, data) {
+		d3.json("../resources/filteredDatav1.json", function(err, data) {
 			if (err) throw err;
 
+			$
 			var filter = {};
-			filter.year_init = 1950;
-			filter.year_end = 2010;
-			barChart = new BarChart("#bar-container", "num-hurricanes", data, filter, "AL");
+			filter.max_wind = -999999;
+			filter.min_pressure = 999999;
+			barChart = new BarChart("#bar-container", "num-hurricanes", data, filter, "both");
 			barChart.init();
 		});
-
-		function update(){
-			var year1 = document.getElementById("year1").value;
-			var year2 = document.getElementById("year2").value;
-
+		
+		$('.filter').change(function(){
+			var basin = $('#basin').val();
+			var maxwind = $('#maxwind').val();
+			if(maxwind == "")
+				maxwind = -1;
+			var minpres = $('#minpres').val();
+			if(minpres == "")
+				minpres = 999999;
+			
 			var filter = {};
-			filter.year_init = year1;
-			filter.year_end = year2;
-			barChart.update(filter);
-		}
+			filter.max_wind = parseFloat(maxwind);
+			filter.min_pressure = parseFloat(minpres);
+			barChart.update(filter, basin);
+		});
+
 	</script>
 </body>

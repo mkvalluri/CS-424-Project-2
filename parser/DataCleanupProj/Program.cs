@@ -11,12 +11,16 @@ namespace DataCleanupProj
         static string finalData = "";
         static DataWrapper outputData;
         static List<FilteredData> filteredData;
+        static List<FilteredData> filteredData1;
+        static List<FilterDataByMonth> filterDataByMonth;
         static List<HurricaneName> hurricaneNames;
         static void Main(string[] args)
         {
             outputData = new DataWrapper();
             filteredData = new List<FilteredData>();
+            filteredData1 = new List<FilteredData>();
             hurricaneNames = new List<HurricaneName>();
+            filterDataByMonth = new List<FilterDataByMonth>();
 
             var data = File.ReadAllLines(@"D:\Projects\hurdat2-1851-2014-060415.txt");
             var data2 = File.ReadAllLines(@"D:\Projects\hurdat2-nencpac-1949-2014-092515.txt");
@@ -28,8 +32,11 @@ namespace DataCleanupProj
             //File.WriteAllText(@"D:\Projects\data.json", finalData);
             finalData = JsonConvert.SerializeObject(filteredData, settings);
             //File.WriteAllText(@"D:\Projects\filteredData.json", finalData);
-            string str = JsonConvert.SerializeObject(hurricaneNames, settings);
-            File.WriteAllText(@"D:\Projects\hurricaneListNames.json", str);
+            finalData = JsonConvert.SerializeObject(hurricaneNames, settings);
+            //File.WriteAllText(@"D:\Projects\hurricaneListNames.json", str);
+            ConstructFinalObject();
+            finalData = JsonConvert.SerializeObject(filterDataByMonth, settings);
+            File.WriteAllText(@"D:\Projects\filteredDatav1.json", finalData);
             Console.ReadLine();
         }
 
@@ -40,6 +47,7 @@ namespace DataCleanupProj
             string basin = "";
             string id = "";
             int year = 0;
+            List<int> month = new List<int>();
             FilteredData tempFilteredData;
 
             float wMin = 99999999.0f;
@@ -59,13 +67,18 @@ namespace DataCleanupProj
                 var tempLines = line.Split(new char[] { ',' });
                 if (Regex.IsMatch(line, @"^\d"))
                 {
-                    //if(!hurricaneNames.Exists(h => h.Name == hurricaneName.Name))
-                        
                     tempFeature.properties.name = name;
                     tempFeature.properties.id = id;
                     tempFeature.properties.basin = basin;
                     tempFeature.type = "Feature";
                     tempFeature.properties.timestamp = GetTimeStamp(tempLines[0] + tempLines[1]);
+                    if (month.Count == 0)
+                        month.Add(tempFeature.properties.timestamp.month);
+                    else
+                    {
+                        if (!month.Exists(m => m == tempFeature.properties.timestamp.month))
+                            month.Add(tempFeature.properties.timestamp.month);
+                    }
                     tempFeature.properties.l = tempLines[2].Trim();
                     tempFeature.properties.ts = tempLines[3].Trim();
                     tempFeature.properties.latitude = tempLines[4].Trim();
@@ -107,6 +120,7 @@ namespace DataCleanupProj
 
                         wAvg /= count;
                         pAvg /= count;
+
                         tempFilteredData = new FilteredData();
                         tempFilteredData.name = name;
                         tempFilteredData.id = id;
@@ -119,6 +133,14 @@ namespace DataCleanupProj
                         tempFilteredData.pressure.min = pMin;
                         tempFilteredData.pressure.max = pMax;
                         filteredData.Add(tempFilteredData);
+
+                        foreach (var m in month)
+                        {
+                            tempFilteredData.month = m;
+                            if(!filteredData1.Exists(f => f.id == tempFilteredData.id && f.month == tempFilteredData.month))
+                                filteredData1.Add(tempFilteredData);
+                        }
+
                         count = 0;
                         pMin = wMin = 9999999.0f;
                         pMax = wMax = 0.0f;
@@ -128,6 +150,8 @@ namespace DataCleanupProj
                     id = tempLines[0].Trim();
                     basin = tempLines[0].Trim().Substring(0, 2);
                     year = Convert.ToInt32(tempLines[0].Trim().Substring(4, 4));
+                    month = new List<int>();
+                    
                 }
             }
             //finalData += JsonConvert.SerializeObject(features);
@@ -153,6 +177,17 @@ namespace DataCleanupProj
             q.sw = Convert.ToInt64(sw) == -999 ? 0 : Convert.ToInt64(sw);
             q.nw = Convert.ToInt64(nw) == -999 ? 0 : Convert.ToInt64(nw);
             return q;
+        }
+
+        static void ConstructFinalObject()
+        {
+            for(int i = 1; i < 13; i++)
+            {
+                FilterDataByMonth f = new FilterDataByMonth();
+                f.month = i;
+                f.data = filteredData1.FindAll(fv => fv.month == f.month);
+                filterDataByMonth.Add(f);
+            }
         }
     }
 }

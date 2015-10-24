@@ -12,6 +12,8 @@ namespace DataCleanupProj
 
         public string id { get; set; }
 
+        public int month { get; set; }
+
         public int year { get; set; }
 
         public string basin { get; set; }
