@@ -3,10 +3,50 @@
 List
 ***********************************/
 #pacificList, #atlanticList {
-  height: 20em;
+  height: 80%;
   overflow-y: scroll;  
 }
-
+.nameLink{
+	color: #fff !important;
+	font-weight: 700;
+	background-color: rgba(0,0,0,0.8);
+	padding: 3px 7px;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+}
 .nameLink:hover {
   cursor: pointer;
+}
+.linkHideHurricane{
+	color: #777 !important;
+	font-weight: 700;
+	background-color: #fff;
+	padding: 3px 7px;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+
+@media only screen and (min-width: 8000px) {
+	#atlanticList{
+		height: 450px;
+		font-size: 40px;
+	}
+	#pacificList{
+		height: 450px;
+		font-size: 40px;
+	}
+	.listFilter{
+		width: 300px;
+    	font-size: 50px;
+	}
+	.listFilterBy{
+		width: 300px;
+    	font-size: 50px;
+	}
+	.panel-title{
+		font-size: 60px !important;
+	}
 }

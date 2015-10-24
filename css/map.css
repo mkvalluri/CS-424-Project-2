@@ -70,6 +70,17 @@ svg {
 .q64{
 	fill: rgba(240,59,32,0.5);
 }
+.boundary {
+  fill: #000;
+  fill-opacity: .2;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.boundary:hover {
+  fill: brown;
+  fill-opacity: .7;
+}
 
 @media only screen and (min-width: 8000px) {
 	.info {

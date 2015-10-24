@@ -12,11 +12,12 @@ Repository.prototype = {
 	searchInReducedData: function(data, filter){
 		return data.filter(function(el) { 
 			if (filter.type == "name"){
-				return el.name == filter.name;
+				return el.name == filter.name && el.basin == filter.basin;
 			}else{
 				var x = 1;
 				return  el.year >= filter.initial_date.getFullYear() 
-						&& el.year <= filter.final_date.getFullYear();
+						&& el.year <= filter.final_date.getFullYear()
+						&& el.basin == filter.basin;
 						//&& el.maxwind >= filter.min_wind
 						//&& el.maxwind <= filter.max_wind;
 						//&& el.properties.minpressure >= filter.min_pressure

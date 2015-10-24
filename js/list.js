@@ -37,7 +37,7 @@ function loadDivContainer(data, divId) {
 	$(divId).html("");
 
 	$.each(data, function (key, value) {
-		var htmlStr = "<div class='col-md-2'><a id='" + value.id + "' class='nameLink'>" +
+		var htmlStr = "<div class='col-md-4'><a id='" + value.id + "' class='nameLink'>" +
 			value.name + " - " + value.year + "</a></div>";
 		$(divId).append(htmlStr);
 	});

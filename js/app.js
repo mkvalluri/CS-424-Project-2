@@ -7,6 +7,8 @@ function App(){
 	this.repository = new Repository();
 	this.mapFilter = {};
 	this.barFilter = {};
+	this.listAtlantic = null;
+	this.listPacific = null;
 }
 
 App.prototype = {
@@ -39,9 +41,22 @@ App.prototype = {
 		};
 
 		// Data for filling the list items
+<<<<<<< Updated upstream
 		var reducedData = self.repository.searchInReducedData(self.reducedData, self.mapFilter);
 		var list = new List();
 		list.loadFilteredData(null, reducedData);
+=======
+		self.listAtlantic = new HurricaneList();
+		self.listPacific = new HurricaneList();
+
+		self.mapFilter.basin = "AL";
+		var reducedDataAL = self.repository.searchInReducedData(self.reducedData, self.mapFilter);
+		self.mapFilter.basin = "EP";
+		var reducedDataPA = self.repository.searchInReducedData(self.reducedData, self.mapFilter);
+		self.listAtlantic.loadFilteredData(reducedDataAL, "#atlanticList");
+		self.listPacific.loadFilteredData(reducedDataPA, "#pacificList");
+
+>>>>>>> Stashed changes
 		d3.selectAll(".nameLink").on("click", function(d){
 			var hurrId = $(this).attr('id');
 			var paths = d3.selectAll("." + hurrId).style("opacity",1);
@@ -110,6 +125,20 @@ App.prototype = {
 		$('#max-pressure').prop('disabled', !nameDisabled);
 	},
 
+	loadDetailedBoundaries: function(data){
+		d3.json("./resources/data/africa.geo.json", function(err0, dat0){
+			data.push(dat0);
+			d3.json("./resources/data/ca-all.geo.json", function(err1, dat1){
+				data.push(dat1);
+				d3.json("./resources/data/mx-all.geo.json", function(err2, dat2){
+					data.push(dat2);
+					return data;
+				});
+			});
+		});
+		return data;
+	},
+
 	init: function(){
 		var self = this,
 			mainMap = null;
@@ -140,6 +169,27 @@ App.prototype = {
 		d3.select("#chk-search-name").on("click", function(){ self.selectFilter("#chk-search-name");});
 		d3.select("#chk-search-others").on("click", function(){ self.selectFilter("#chk-search-others");});
 
+		$('.listFilter').change(function(){
+			var containerId = "#" + $(this).attr('id').slice(0, -8);
+			var sortBy = $(this).val();
+			var sortByOrder = $(containerId + "Filter_2").val();
+
+			if (containerId == "#atlanticList")
+				self.listAtlantic.filterData(containerId, sortBy, sortByOrder);
+			else
+				self.listPacific.filterData(containerId, sortBy, sortByOrder);
+		});
+		
+		$('.listFilterBy').change(function(){
+			var containerId = "#" + $(this).attr('id').slice(0, -8);
+			var sortBy = $(containerId + "Filter_1").val();
+			var sortByAsending = $(this).val();
+			if (containerId == "#atlanticList")
+				self.listAtlantic.filterData(containerId, sortBy, sortByAsending);
+			else
+				self.listPacific.filterData(containerId, sortBy, sortByAsending);
+		});
+
 		/* set the initial filters */
 		self.mapFilter.landfall = "all";
 		self.mapFilter.initial_date = $('#initial-date').datepicker('getDate');
@@ -150,26 +200,32 @@ App.prototype = {
 		self.mapFilter.min_pressure = $('#min-pressure').val();
 		self.mapFilter.max_pressure = $('#max-pressure').val();
 
-		self.barFilter.year_init = 1950;
+		self.barFilter.year_init = 1851;
 		self.barFilter.year_end = 2014;
 		self.selectFilter("#chk-search-others");
 
-		d3.json("./resources/data.json", function(err1, collection){
-			if (err1) throw err1;
-			mainMap = new Map(collection, "map-container", 5);
-			mainMap.init();
-			self.map = mainMap;
+		var boundaries = [];
+		d3.json("./resources/geojson/boundaries_admin_1.geojson", function(err0, bData){
+			boundaries.push(bData);
+			//boundaries = self.loadDetailedBoundaries(boundaries);
 
-			d3.json("./resources/filteredData.json", function(err2, data) {
-				if (err2) throw err2;
-				self.bchartAtlantic = new BarChart("#bc-container-nohurrAL", "num-hurricanes", data, self.barFilter, "AL");
-				self.bchartPacific = new BarChart("#bc-container-nohurrPA", "num-hurricanes", data, self.barFilter, "PA");
+			d3.json("./resources/data.json", function(err1, collection){
+				if (err1) throw err1;
+				mainMap = new Map(collection, boundaries, "map-container", 5);
+				mainMap.init();
+				self.map = mainMap;
 
-				self.bchartAtlantic.init();
-				self.bchartPacific.init();
-				self.reducedData = data;
+				d3.json("./resources/filteredData.json", function(err2, data) {
+					if (err2) throw err2;
+					self.bchartAtlantic = new BarChart("#bc-container-nohurrAL", "num-hurricanes", data, self.barFilter, "AL");
+					self.bchartPacific = new BarChart("#bc-container-nohurrPA", "num-hurricanes", data, self.barFilter, "PA");
 
-				self.search();
+					self.bchartAtlantic.init();
+					self.bchartPacific.init();
+					self.reducedData = data;
+
+					self.search();	
+				});
 			});
 		});
 	}

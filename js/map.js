@@ -12,11 +12,12 @@
 */
 
 /* Class constructor and attributes */
-function Map(data, target, zoomLevel){
+function Map(data, boundaries, target, zoomLevel){
 	this.chart = {};
 
 	this.chart.data = data;				// Holds all the NHC dataset
 	this.chart.filteredData = null;
+	this.chart.boundaries = boundaries;
 
 	this.chart.initZoom = zoomLevel;
 	this.chart.map = null;				// Leaflet map object
@@ -31,6 +32,9 @@ function Map(data, target, zoomLevel){
 
 	this.chart.transformation = null;	// Stored for making D3 geo transformation of
 	this.chart.path = null;				// Leaflet objects
+
+	this.chart.heatTransformation = null;
+	this.chart.heatPath = null;
 
 	this.chart.animStartDate = null;
 	this.chart.animEndDate = null;
@@ -359,8 +363,27 @@ Map.prototype = {
 		};
 	}, // end addHurricane function
 
-	resetAnim: function(){
+	addBoundaries: function(){
+		var self = this,
+			chart = this.chart,
+			g = chart.svgDataLayer.select("g"),
+			map = chart.map;
 
+		chart.heatTransform = d3.geo.transform({point: projectPoint});
+		chart.heatPath = d3.geo.path().projection(chart.heatTransform);
+
+		for (var i = 0; i < chart.boundaries.length; i++){
+			g.selectAll(".boundary")
+				.data(chart.boundaries[i].features)
+				  .enter()
+				 .append("path")
+				 .attr("class", "boundary");
+		}
+
+		function projectPoint(x, y){
+			var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+			this.stream.point(point.x, point.y);
+		};
 	},
 
 	reset: function(){
@@ -409,7 +432,9 @@ Map.prototype = {
 					     	  .attr("d", p)
 					     	  .classed("line"+hurrCat, true)
 					     	  .classed(d[0][0].properties.id, true);
-					     })
+					     });
+			g.selectAll(".boundary").attr("d", chart.heatPath);
+
 		}
 	}, // end reset function
 
@@ -498,6 +523,7 @@ Map.prototype = {
 
 		self.createInfoChart();
 		self.createTimeControl();
+		self.addBoundaries();
 	} // end init function
 }
 
