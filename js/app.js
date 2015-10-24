@@ -40,7 +40,7 @@ App.prototype = {
 
 		// Data for filling the list items
 		var reducedData = self.repository.searchInReducedData(self.reducedData, self.mapFilter);
-		var list = new DataAccess();
+		var list = new List();
 		list.loadFilteredData(null, reducedData);
 		d3.selectAll(".nameLink").on("click", function(d){
 			var hurrId = $(this).attr('id');

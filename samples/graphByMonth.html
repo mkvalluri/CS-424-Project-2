@@ -9,7 +9,7 @@
 	<title>CS424-Project 2: Barchart sample page</title>
 	<script src="../js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="../js/d3.min.js"></script>  <!-- D3 -->
-	<script type="text/javascript" src="../js/graph.js"></script> <!-- Barchart -->
+	<script type="text/javascript" src="../js/graphByMonth.js"></script> <!-- Barchart -->
 
 	<style>
 		#bar-container{
@@ -74,8 +74,8 @@
 			<option value="AL">Atlantic</option>
 			<option value="EP">Pacific</option>
 			</select>
-		Max Wind:<input type="text" id="maxwind" class="filter"><br/>
-		Min Pressure:<input type="text" id="minpres" class="filter">
+		Max Wind:<input type="text" id="maxwind_min" class="filter"><input type="text" id="maxwind_max" class="filter"><br/>
+		Min Pressure:<input type="text" id="minpres_min" class="filter"><input type="text" id="minpres_max" class="filter">
 	</div>
 	<div id="bar-container"></div>
 	
@@ -86,24 +86,41 @@
 
 			$
 			var filter = {};
-			filter.max_wind = -999999;
-			filter.min_pressure = 999999;
-			barChart = new BarChart("#bar-container", "num-hurricanes", data, filter, "both");
+			filter.max_wind = {};
+			filter.max_wind.min = 0;
+			filter.max_wind.max = 999999;
+			filter.min_pressure = {};
+			filter.min_pressure.min = 0;
+			filter.min_pressure.max = 999999;
+			barChart = new BarChartByMonth("#bar-container", "num-hurricanes", data, filter, "both");
 			barChart.init();
 		});
 		
 		$('.filter').change(function(){
 			var basin = $('#basin').val();
-			var maxwind = $('#maxwind').val();
-			if(maxwind == "")
-				maxwind = -1;
-			var minpres = $('#minpres').val();
-			if(minpres == "")
-				minpres = 999999;
+			var maxwind =  {};
+			maxwind.min = $('#maxwind_min').val();
+			maxwind.max = $('#maxwind_max').val();
+			if(maxwind.min == "")
+				maxwind.min = 0;
+			if(maxwind.max == "")
+				maxwind.max = 999999;
+			var minpres = {};
+			minpres.min = $('#minpres_min').val();
+			minpres.max = $('#minpres_max').val();
+			if(minpres.min == "")
+				minpres.min = 0;
+			if(minpres.max == "")
+				minpres.max = 999999;
 			
 			var filter = {};
-			filter.max_wind = parseFloat(maxwind);
-			filter.min_pressure = parseFloat(minpres);
+			filter.max_wind = {};
+			filter.min_pressure = {};
+			filter.max_wind.min = parseFloat(maxwind.min);
+			filter.max_wind.max = parseFloat(maxwind.max);
+			filter.min_pressure.min = parseFloat(minpres.min);
+			filter.min_pressure.max = parseFloat(minpres.max);
+			console.log(filter.min_pressure);
 			barChart.update(filter, basin);
 		});
 

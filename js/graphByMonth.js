@@ -4,7 +4,7 @@
 /*
 	Bar chart for showing the number of hurricanes per year in a basin
 */
-function BarChart(target, type, data, filter, basin) {
+function BarChartByMonth(target, type, data, filter, basin) {
 	this.chart = {};
 	this.chart.margin = { top: 50, right: 20, bottom: 40, left: 80 };
 	this.chart.height = 0;
@@ -32,28 +32,30 @@ function BarChart(target, type, data, filter, basin) {
 	this.chart.barPadding = 1;
 }
 
-BarChart.prototype = {
-	constructor: BarChart,
+BarChartByMonth.prototype = {
+	constructor: BarChartByMonth,
 
 	filterData: function () {
 		var self = this,
 			bar = this.chart;
 
 		var jsonArr = [];
+		console.log(bar.filter.min_pressure);
 		$.each(bar.data, function (index, obj) {
 			var t = obj.data.filter(function (d) {
 					if(bar.basin == "both") 
-						return d.wind.max > bar.filter.max_wind && d.pressure.min < bar.filter.min_pressure;
+						return d.wind.max >= bar.filter.max_wind.min && d.wind.max <= bar.filter.max_wind.max
+							&& d.pressure.min >= bar.filter.min_pressure.min && d.pressure.min <= bar.filter.min_pressure.max;
 					else 
-						return d.basin == bar.basin && d.wind.max > bar.filter.max_wind && d.pressure.min < bar.filter.min_pressure;
+						return d.basin == bar.basin 
+							&&  d.wind.max >= bar.filter.max_wind.min && d.wind.max <= bar.filter.max_wind.max
+							&& d.pressure.min >= bar.filter.min_pressure.min && d.pressure.min <= bar.filter.min_pressure.max;
 					});
-			console.log(t);
 			jsonArr.push({"month": obj.month, "data": t});
 		});
 		
 		bar.filteredData = jsonArr;
 		bar.maxYValue = -1;
-		
 		$.each(bar.filteredData, function(index, obj) {
 			if (bar.maxYValue < obj.data.length) {
 				bar.maxYValue = obj.data.length;
@@ -121,37 +123,41 @@ BarChart.prototype = {
 						.ticks(10)
 						.tickFormat(function(d){ return d });
 
-		// Bind bars (svg rectangles) to data
-		var barContainer = bar.svg.append("g").attr("class", "bar");
-		var bars = barContainer.selectAll("rect")
-					  .data(bar.filteredData);
-		bars.enter().append("rect")
-			  .attr({
-			  		x: function(d, i) { return i * (bar.width / bar.filteredData.length)  },
-			  		y: function(d) { return bar.yScale(d.data.length); },
-			  		width: bar.width / bar.filteredData.length - bar.barPadding,
-			  		height: function(d) {
-						   return bar.height - bar.yScale(d.data.length); },
-			  		class: "bar_rect"
-			  });
-
-		bars.exit().transition().duration(500).remove();
-
-		bars.on("mouseover", function(d){
-			var x = (d3.event.pageX);
-			bar.tooltip.select(".tooltip-year").html(getMonth(d.month) + ": ");
-			bar.tooltip.select(".tooltip-total").html(d.data.length + " events");
-			bar.tooltip.style("top", (d3.event.pageY) + "px");
-			if (x < bar.width/2)
-				bar.tooltip.style("left", (d3.event.pageX) + "px");
-			else 
-				bar.tooltip.style("left", (d3.event.pageX) - 110 + "px");
-			bar.tooltip.style("display", "block");
-		});
-		bars.on("mouseout", function(d){
-			bar.tooltip.style("display", "none");
-		});
-
+		if(bar.maxYValue != 0)
+		{
+			// Bind bars (svg rectangles) to data
+			var barContainer = bar.svg.append("g").attr("class", "bar");
+			var bars = barContainer.selectAll("rect")
+						.data(bar.filteredData);
+			bars.enter().append("rect")
+				.attr({
+						x: function(d, i) { return i * (bar.width / bar.filteredData.length)  },
+						y: function(d) { return bar.yScale(d.data.length); },
+						width: bar.width / bar.filteredData.length - bar.barPadding,
+						height: function(d) {
+							return bar.height - bar.yScale(d.data.length); },
+						class: "bar_rect"
+				});
+	
+			bars.exit().transition().duration(500).remove();
+	
+			bars.on("mouseover", function(d){
+				var x = (d3.event.pageX);
+				bar.tooltip.select(".tooltip-year").html(getMonth(d.month) + ": ");
+				bar.tooltip.select(".tooltip-total").html(d.data.length + " events");
+				bar.tooltip.style("top", (d3.event.pageY) + "px");
+				if (x < bar.width/2)
+					bar.tooltip.style("left", (d3.event.pageX) + "px");
+				else 
+					bar.tooltip.style("left", (d3.event.pageX) - 110 + "px");
+				bar.tooltip.style("display", "block");
+			});
+			bars.on("mouseout", function(d){
+				bar.tooltip.style("display", "none");
+			});
+		}
+		
+		
 		// Append the xAxis and yAxis to the bar chart
 		bar.svg.append("g")
 				.call(bar.xAxis)
