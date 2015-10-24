@@ -41,11 +41,6 @@ App.prototype = {
 		};
 
 		// Data for filling the list items
-<<<<<<< Updated upstream
-		var reducedData = self.repository.searchInReducedData(self.reducedData, self.mapFilter);
-		var list = new List();
-		list.loadFilteredData(null, reducedData);
-=======
 		self.listAtlantic = new HurricaneList();
 		self.listPacific = new HurricaneList();
 
@@ -56,7 +51,6 @@ App.prototype = {
 		self.listAtlantic.loadFilteredData(reducedDataAL, "#atlanticList");
 		self.listPacific.loadFilteredData(reducedDataPA, "#pacificList");
 
->>>>>>> Stashed changes
 		d3.selectAll(".nameLink").on("click", function(d){
 			var hurrId = $(this).attr('id');
 			var paths = d3.selectAll("." + hurrId).style("opacity",1);
