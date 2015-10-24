@@ -88,14 +88,14 @@ namespace DataCleanupProj
                     string k = tempLines[4].Substring(0, tempLines[4].Length - 1).Trim();
                     tempFeature.geometry.coordinates = new Decimal[] { Convert.ToDecimal(l) * -1, Convert.ToDecimal(k) };
 
-                    tempFeature.properties.maxwind = Convert.ToInt64(tempLines[6].Trim());
+                    tempFeature.properties.maxwind = Convert.ToInt64(tempLines[6].Trim()) == -999 ? 0 : Convert.ToInt64(tempLines[6].Trim());
                     if (wMax < tempFeature.properties.maxwind)
                         wMax = tempFeature.properties.maxwind;
                     if (wMin > tempFeature.properties.maxwind)
                         wMin = tempFeature.properties.maxwind;
                     wAvg += tempFeature.properties.maxwind;
 
-                    tempFeature.properties.minpressure = Convert.ToInt64(tempLines[7].Trim());
+                    tempFeature.properties.minpressure = Convert.ToInt64(tempLines[7].Trim()) == -999 ? 0 : Convert.ToInt64(tempLines[7].Trim());
                     if (pMax < tempFeature.properties.minpressure)
                         pMax = tempFeature.properties.minpressure;
                     if (pMin > tempFeature.properties.minpressure)

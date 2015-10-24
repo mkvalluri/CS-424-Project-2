@@ -47,7 +47,7 @@ BarChart.prototype = {
 					else 
 						return d.basin == bar.basin && d.wind.max > bar.filter.max_wind && d.pressure.min < bar.filter.min_pressure;
 					});
-					
+			console.log(t);
 			jsonArr.push({"month": obj.month, "data": t});
 		});
 		
@@ -107,7 +107,7 @@ BarChart.prototype = {
 		// Configure scales and axis
 		bar.xScale.domain([new Date(2012, 0, 1), new Date(2012, 11, 31)]);
 		//bar.xScale.domain(bar.filteredData.map(function(d) { console.log(d.month); return d.month; }));
-		bar.yScale.domain([bar.maxYValue, -50]);
+		bar.yScale.domain([bar.maxYValue, 0]);
 
 		bar.xAxis = d3.svg.axis()
 						  .scale(bar.xScale)
