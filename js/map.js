@@ -56,6 +56,12 @@ Map.prototype = {
 		return this.chart.map.latLngToLayerPoint(new L.LatLng(y, x));
 	}, // end applyLatLngToLayer function
 
+	applyLatLngToHeatmap: function(d){
+		var y = d[0].y;
+		var x = d[0].x;
+		return this.chart.map.latLngToLayerPoint(new L.LatLng(y, x));
+	},
+
 	/* Utility function that classifies a hurricane based on its wind at a 
 	   certain point in time speed. */
 	getHurricaneCategory: function(speed){
@@ -451,8 +457,49 @@ Map.prototype = {
 					     });
 			g.selectAll(".boundary").attr("d", chart.heatPath);
 
+			var toHeatmapLine = d3.svg.line()
+				.interpolate("linear")
+				.x(function(d){ return self.applyLatLngToHeatmap(d).x; })
+				.y(function(d){ return self.applyLatLngToHeatmap(d).y; });
+			d3.selectAll(".heatmap")
+						.each(function(d){
+							var p = "";
+					     	for(var i = 0; i < d.length; i++)
+					     		p = p + toHeatmapLine(d[i]) + ",";
+
+							d3.select(this)
+					     	  .attr("d", p);
+						});
+
 		}
 	}, // end reset function
+
+	drawHeatMap: function(){
+		var self = this,
+			chart = this.chart;
+
+		var x0 = -168.331839;
+		var x1 = -3.097466;
+		var y0 = 69.145157;
+		var y1 = 3.464615;
+
+		var g = chart.svgDataLayer.select("g");
+		var i = x0;
+		while(i < x1){
+			var j = y0;
+			while (j > y1){
+				var squareData = [ [{ "x": i, "y":j }, { "x": i + 0.9, "y":j }],
+								   [{ "x": i+0.9, "y":j }, { "x": i + 0.9, "y":j+0.9 }],
+								   [{ "x": i+0.9, "y":j+0.9 }, { "x": i, "y":j+0.9 }],
+		  						   [{ "x": i, "y":j+0.9 }, { "x": i, "y":j }]];
+		  		g.append("path")
+				     .datum([squareData])
+			         .attr("class", "heatmap");
+				j = j - 0.9;
+			}
+			i = i + 0.9;
+		}
+	},
 
 	init: function(){
 		var self = this,
@@ -540,6 +587,7 @@ Map.prototype = {
 		self.createInfoChart();
 		self.createTimeControl();
 		self.addBoundaries();
+		self.drawHeatMap();
 	} // end init function
 }
 

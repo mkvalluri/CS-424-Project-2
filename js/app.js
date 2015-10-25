@@ -425,9 +425,8 @@ App.prototype = {
 		self.createBarLegendTooltip();
 
 		var boundaries = [];
-		d3.json("./resources/geojson/boundaries_admin_1.geojson", function(err0, bData){
-			boundaries.push(bData);
-			//boundaries = self.loadDetailedBoundaries(boundaries);
+		//d3.json("./resources/geojson/boundaries_admin_1.geojson", function(err0, bData){
+		//	boundaries.push(bData);
 
 			d3.json("./resources/data.json", function(err1, collection){
 				if (err1) throw err1;
@@ -459,6 +458,6 @@ App.prototype = {
 					});	
 				});
 			});
-		});
+		//});
 	}
 }

@@ -82,6 +82,13 @@ svg {
   fill-opacity: .7;
 }
 
+.heatmap{
+	fill: #000;
+	fill-opacity: .2;
+	stroke: #fff;
+  	stroke-width: 1.5px;
+}
+
 @media only screen and (min-width: 8000px) {
 	.info {
 		height: 200px;
