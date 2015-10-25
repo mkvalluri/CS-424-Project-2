@@ -40,16 +40,15 @@ BarChartByMonth.prototype = {
 			bar = this.chart;
 
 		var jsonArr = [];
-		console.log(bar.filter.min_pressure);
 		$.each(bar.data, function (index, obj) {
 			var t = obj.data.filter(function (d) {
 					if(bar.basin == "both") 
-						return d.wind.max >= bar.filter.max_wind.min && d.wind.max <= bar.filter.max_wind.max
-							&& d.pressure.min >= bar.filter.min_pressure.min && d.pressure.min <= bar.filter.min_pressure.max;
+						return d.wind.min >= bar.filter.max_wind.min && d.wind.max <= bar.filter.max_wind.max
+							&& d.pressure.min >= bar.filter.min_pressure.min && d.pressure.max <= bar.filter.min_pressure.max;
 					else 
 						return d.basin == bar.basin 
-							&&  d.wind.max >= bar.filter.max_wind.min && d.wind.max <= bar.filter.max_wind.max
-							&& d.pressure.min >= bar.filter.min_pressure.min && d.pressure.min <= bar.filter.min_pressure.max;
+							&&  d.wind.min >= bar.filter.max_wind.min && d.wind.max <= bar.filter.max_wind.max
+							&& d.pressure.min >= bar.filter.min_pressure.min && d.pressure.max <= bar.filter.min_pressure.max;
 					});
 			jsonArr.push({"month": obj.month, "data": t});
 		});
