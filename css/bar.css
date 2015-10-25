@@ -9,9 +9,32 @@
 	font-size: 11px;
 }
 .bar_rect{
-	fill: red;
+	fill: rgba(0,0,0,0.8);
 }
-.bar_rect:hover{
+.bar_rect1850{
+	fill: rgba(255,245,240,1);
+}
+.bar_rect1914{
+	fill: rgba(254,224,210,1);
+}
+.bar_rect1957{
+	fill: rgba(252,187,161,1);
+}
+.bar_rect1960{
+	fill: rgba(252,146,114,1);
+}
+.bar_rect1990{
+	fill: rgba(251,106,74,1);
+}
+.bar_rect2002{
+	fill: rgba(239,59,44,1);
+}
+.bar_rect2013{
+	fill: rgba(203,24,29,1);
+}
+.bar_rect1850:hover, .bar_rect1914:hover, .bar_rect1957:hover, 
+.bar_rect1960:hover, .bar_rect1990:hover, .bar_rect2002:hover,
+.bar_rect2013:hover{
 	fill: black;
 }
 .chart-title{
@@ -47,6 +70,15 @@
 
 .tick text {
 	font-size: 25px;
+}
+
+.grid .tick{
+	stroke: lightgrey;
+	opacity: 0.7;
+}
+
+.grid path{
+	stroke-width: 0;
 }
 
 @media only screen and (min-width: 1080px) {

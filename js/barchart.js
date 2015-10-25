@@ -110,6 +110,17 @@ BarChart.prototype = {
 						.ticks(10)
 						.tickFormat(function(d){ return d });
 
+		bar.svg.selectAll("line.y")
+			.data(bar.yScale.ticks(10))
+			 .enter().append("line")
+			 .attr("class", "y")
+			 .attr("x1", 0)
+			 .attr("x2", bar.width)
+			 .attr("y1", bar.yScale)
+			 .attr("y2", bar.yScale)
+			 .style("stroke", "#ccc");
+ 
+
 		// Bind bars (svg rectangles) to data
 		var barContainer = bar.svg.append("g").attr("class", "bar");
 		var bars = barContainer.selectAll("rect")
@@ -120,7 +131,24 @@ BarChart.prototype = {
 			  		y: function(d) { return bar.yScale(d.total); },
 			  		width: bar.width / bar.filteredData.length - bar.barPadding,
 			  		height: function(d) { return bar.height - bar.yScale(d.total); },
-			  		class: "bar_rect"
+			  		class: function(d){
+			  			if (d.year < 1914)
+			  				return "bar_rect1850";
+			  			else if (d.year < 1944)
+			  				return "bar_rect1914";
+			  			else if (d.year < 1957)
+			  				return "bar_rect1957";
+			  			else if (d.year < 1960)
+			  				return "bar_rect1957";
+			  			else if (d.year < 1990)
+			  				return "bar_rect1960";
+			  			else if (d.year < 2002)
+			  				return "bar_rect1990";
+			  			else if (d.year < 2013)
+			  				return "bar_rect2002";
+			  			else
+			  				return "bar_rect2013";
+			  		}
 			  });
 
 		bars.exit().transition().duration(500).remove();

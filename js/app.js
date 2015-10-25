@@ -9,6 +9,7 @@ function App(){
 	this.barFilter = {};
 	this.listAtlantic = null;
 	this.listPacific = null;
+	this.tooltip = null;
 }
 
 App.prototype = {
@@ -27,22 +28,34 @@ App.prototype = {
 	search: function(){
 		var self = this;	
 
-		if ($('#chk-search-name').is(":checked")){
+		if (!$('#chk-search-others').is(":checked")){
 			self.mapFilter.type = "name";
 			self.mapFilter.name = $('#hurr-name').val().toUpperCase().trim();
 		} else {
 			self.mapFilter.type = "other";
+			self.mapFilter.name = $('#hurr-name').val().toUpperCase().trim();
 			self.mapFilter.initial_date = $('#initial-date').datepicker('getDate');
 			self.mapFilter.final_date = $('#final-date').datepicker('getDate');
+			self.mapFilter.windunit = $('#cb-wind-speed').val();
 			self.mapFilter.min_wind = $('#min-wind').val();
 			self.mapFilter.max_wind = $('#max-wind').val();
+			if (self.mapFilter.windunit == 'kph'){
+				self.mapFilter.min_wind = self.mapFilter.min_wind * 0.621371;
+				self.mapFilter.max_wind = self.mapFilter.max_wind * 0.621371;
+			}
+			self.mapFilter.pressureunit = $('#cb-pressure').val();
 			self.mapFilter.min_pressure = $('#min-pressure').val();
 			self.mapFilter.max_pressure = $('#max-pressure').val();
+			if (self.mapFilter.pressureunit == 'psi'){
+				self.mapFilter.min_pressure = self.mapFilter.min_pressure * 68.9476;
+				self.mapFilter.max_pressure = self.mapFilter.max_pressure * 68.9476;
+			}
+			self.mapFilter.top = parseInt($('#top-filter').val());
 		};
 
 		// Data for filling the list items
-		self.listAtlantic = new HurricaneList();
-		self.listPacific = new HurricaneList();
+		self.listAtlantic = new HurricaneList(self.mapFilter.windunit, self.mapFilter.pressureunit);
+		self.listPacific = new HurricaneList(self.mapFilter.windunit, self.mapFilter.pressureunit);
 
 		self.mapFilter.basin = "AL";
 		var reducedDataAL = self.repository.searchInReducedData(self.reducedData, self.mapFilter);
@@ -98,25 +111,42 @@ App.prototype = {
 		self.map.stop();
 	},
 
-	selectFilter: function(id){
-		var nameDisabled = false;
-		if (id=='#chk-search-others'){
-			$('#chk-search-name').prop("checked", false);
-			nameDisabled = true;
-		}else {
-			$('#chk-search-others').prop("checked", false);
-		}
+	reset: function(){
+		var self = this;
 
-		$('#hurr-name').prop('disabled', nameDisabled);
-		$('#initial-date').prop('disabled', !nameDisabled);
-		$('#final-date').prop('disabled', !nameDisabled);
-		$('#btn-landfall-all').prop('disabled', !nameDisabled);
-		$('#btn-landfall-yes').prop('disabled', !nameDisabled);
-		$('#btn-landfall-no').prop('disabled', !nameDisabled);
-		$('#min-wind').prop('disabled', !nameDisabled);
-		$('#max-wind').prop('disabled', !nameDisabled);
-		$('#min-pressure').prop('disabled', !nameDisabled);
-		$('#max-pressure').prop('disabled', !nameDisabled);
+		$('#hurr-name').val('');
+		$('#initial-date').datepicker("update", new Date(2014,04,01));
+		$('#final-date').datepicker("update", new Date(2014,11,01));
+		$('#min-wind').val(0);
+		$('#max-wind').val(200);
+		$('#cb-pressure').val("mph");
+		$('#cb-pressure').val("mbar");
+		$('#min-pressure').val(0);
+		$('#max-pressure').val(1000);
+		$('#top-filter').val(100);
+		self.selectLandfallFilter("#btn-landfall-all");
+		$("#chk-search-others").prop("checked",true);
+
+		self.search();
+	},
+
+	selectFilter: function(){
+		var enableOthers = true;
+
+		if ($('#chk-search-others').is(":checked"))
+			enableOthers = false;
+
+		$('#initial-date').prop('disabled', enableOthers);
+		$('#final-date').prop('disabled', enableOthers);
+		$('#btn-landfall-all').prop('disabled', enableOthers);
+		$('#btn-landfall-yes').prop('disabled', enableOthers);
+		$('#btn-landfall-no').prop('disabled', enableOthers);
+		$('#min-wind').prop('disabled', enableOthers);
+		$('#max-wind').prop('disabled', enableOthers);
+		$('#min-pressure').prop('disabled', enableOthers);
+		$('#cb-wind-speed').prop('disabled', enableOthers);
+		$('#cb-pressure').prop('disabled', enableOthers);
+		$('#top-filter').prop('disabled', enableOthers);
 	},
 
 	loadDetailedBoundaries: function(data){
@@ -131,6 +161,148 @@ App.prototype = {
 			});
 		});
 		return data;
+	},
+
+	createHurrTooltip: function(){
+		var self = this;
+
+		self.tooltip = d3.select("#hurr-tooltip")
+						.append("div")
+						.attr("class", "hurr-tooltip");
+		var divTitle = self.tooltip.append("div").attr("class","h-tool-title");
+		divTitle.append("span").attr("class", "tname");
+		divTitle.append("span").attr("class", "tyear");
+
+		var divCat = self.tooltip.append("div").attr("class","h-tool-category");
+		divCat.append("span").attr("class", "tlabel").html("Category: ");
+		divCat.append("span").attr("class", "tcategory tvalue");
+		
+		var divStart = self.tooltip.append("div").attr("class","h-tool-start");
+		divStart.append("span").attr("class", "tlabel").html("Start Date: ");
+		divStart.append("span").attr("class", "tstart tvalue");
+
+		var divEnd = self.tooltip.append("div").attr("class","h-tool-end");
+		divEnd.append("span").attr("class", "tlabel").html("End Date: ");
+		divEnd.append("span").attr("class", "tend tvalue");
+
+		var divMaxWind = self.tooltip.append("div").attr("class","h-tool-maxwind");
+		divMaxWind.append("span").attr("class", "tlabel").html("Max Wind: ");
+		divMaxWind.append("span").attr("class", "tmaxwind tvalue");
+
+		var divMindWind = self.tooltip.append("div").attr("class","h-tool-minwind");
+		divMindWind.append("span").attr("class", "tlabel").html("Min Wind: ");
+		divMindWind.append("span").attr("class", "tminwind tvalue");
+
+		var divAvgWind = self.tooltip.append("div").attr("class","h-tool-avgwind");
+		divAvgWind.append("span").attr("class", "tlabel").html("Avg Wind: ");
+		divAvgWind.append("span").attr("class", "tavgwind tvalue");
+
+		var divMaxPressure = self.tooltip.append("div").attr("class","h-tool-maxpressure");
+		divMaxPressure.append("span").attr("class", "tlabel").html("Max Pressure: ");
+		divMaxPressure.append("span").attr("class", "tmaxpressure tvalue");
+
+		var divMinPressure = self.tooltip.append("div").attr("class","h-tool-minpressure");
+		divMinPressure.append("span").attr("class", "tlabel").html("Min Pressure: ");
+		divMinPressure.append("span").attr("class", "tminpressure tvalue");
+
+		var divAvgPressure = self.tooltip.append("div").attr("class","h-tool-avgpressure");
+		divAvgPressure.append("span").attr("class", "tlabel").html("Avg Pressure: ");
+		divAvgPressure.append("span").attr("class", "tavgpressure tvalue");
+	},
+
+	createBarLegendTooltip: function(){
+		var self = this;
+
+		var tooltip = d3.select("#bar-tooltip")
+						.append("div")
+						.attr("class", "bar-tooltip");
+		tooltip.append("div").attr("class", "bt-title")
+				.html("Technologies Available");
+		var list = tooltip.append("ul");
+		var li1850 = list.append("li").attr("class", "bt-1850");
+		li1850.append("span").style("background-color", "rgba(255,245,240,1)");
+		li1850.append("span").attr("class", "bt-info").html("< 1914: Observations");
+
+		var li1914 = list.append("li").attr("class", "bt-1914");
+		li1914.append("span").style("background-color","rgba(254,224,210,1)");
+		li1914.append("span").attr("class", "bt-info").html("> 1914: Reconnaissance Aircraft");
+
+		var li1957 = list.append("li").attr("class", "bt-1957");
+		li1957.append("span").style("background-color","rgba(252,187,161,1)");
+		li1957.append("span").attr("class", "bt-info").html("> 1957: Radars");	
+
+		var li1960 = list.append("li").attr("class", "bt-1960");
+		li1960.append("span").style("background-color","rgba(252,146,114,1)");
+		li1960.append("span").attr("class", "bt-info").html("> 1960: Satellites");
+
+		var li1990 = list.append("li").attr("class", "bt-1990");
+		li1990.append("span").style("background-color","rgba(251,106,74,1)");
+		li1990.append("span").attr("class", "bt-info").html("> 1990: Doppler Radar");
+
+		var li2002 = list.append("li").attr("class", "bt-2002");
+		li2002.append("span").style("background-color","rgba(239,59,44,1)");
+		li2002.append("span").attr("class", "bt-info").html("> 2002: Microwave sounding units");
+
+		var li2013 = list.append("li").attr("class", "bt-2013");
+		li2013.append("span").style("background-color","rgba(203,24,29,1)");
+		li2013.append("span").attr("class", "bt-info").html("> 2013: Dual polarization");
+
+		d3.selectAll(".barlegend")
+			.on("mouseover", function(){
+				var tooltip = d3.select("#bar-tooltip");
+
+				var elem = $(this);
+				if (elem.hasClass("leg0")){
+					d3.select(".bt-1914").style("display", "none");
+					d3.select(".bt-1957").style("display", "none");
+					d3.select(".bt-1960").style("display", "none");
+					d3.select(".bt-1990").style("display", "none");
+					d3.select(".bt-2002").style("display", "none");
+					d3.select(".bt-2013").style("display", "none");
+				} else if(elem.hasClass("leg1")){
+					d3.select(".bt-1957").style("display", "none");
+					d3.select(".bt-1960").style("display", "none");
+					d3.select(".bt-1990").style("display", "none");
+					d3.select(".bt-2002").style("display", "none");
+					d3.select(".bt-2013").style("display", "none");
+				} else if(elem.hasClass("leg2")){
+					d3.select(".bt-1960").style("display", "none");
+					d3.select(".bt-1990").style("display", "none");
+					d3.select(".bt-2002").style("display", "none");
+					d3.select(".bt-2013").style("display", "none");
+				} else if(elem.hasClass("leg3")){
+					d3.select(".bt-1990").style("display", "none");
+					d3.select(".bt-2002").style("display", "none");
+					d3.select(".bt-2013").style("display", "none");
+				} else if(elem.hasClass("leg4")){
+					d3.select(".bt-2002").style("display", "none");
+					d3.select(".bt-2013").style("display", "none");
+				} else if(elem.hasClass("leg5")){
+					d3.select(".bt-2013").style("display", "none");
+				}
+
+				var height = parseInt(tooltip.style("height"));
+				var width = parseInt(tooltip.style("width"));
+				var containerWidth = parseInt(d3.select("#bar-tooltip").style("width"));
+				if (d3.event.pageX > containerWidth/2)
+					x = d3.event.pageX - containerWidth/2 + 20;
+
+
+				tooltip.style("top", (d3.event.pageY + 20) + "px");
+				tooltip.style("left", x + "px");
+				tooltip.style("display","block");
+			})
+			.on("mouseout", function(){
+				d3.select(".bt-1914").style("display", "block");
+				d3.select(".bt-1957").style("display", "block");
+				d3.select(".bt-1960").style("display", "block");
+				d3.select(".bt-1990").style("display", "block");
+				d3.select(".bt-2002").style("display", "block");
+				d3.select(".bt-2013").style("display", "block");
+
+				var tooltip = d3.select("#bar-tooltip");
+				tooltip.style("display","none");
+			});
 	},
 
 	init: function(){
@@ -162,6 +334,7 @@ App.prototype = {
 		d3.select("#btnstop").on("click", function(){ self.stop(); });
 		d3.select("#chk-search-name").on("click", function(){ self.selectFilter("#chk-search-name");});
 		d3.select("#chk-search-others").on("click", function(){ self.selectFilter("#chk-search-others");});
+		d3.select("#btn-reset").on("click", function(){ self.reset(); });
 
 		$('.listFilter').change(function(){
 			var containerId = "#" + $(this).attr('id').slice(0, -8);
@@ -197,6 +370,9 @@ App.prototype = {
 		self.barFilter.year_init = 1851;
 		self.barFilter.year_end = 2014;
 		self.selectFilter("#chk-search-others");
+
+		self.createHurrTooltip();
+		self.createBarLegendTooltip();
 
 		var boundaries = [];
 		d3.json("./resources/geojson/boundaries_admin_1.geojson", function(err0, bData){

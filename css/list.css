@@ -26,16 +26,18 @@ List
 	text-align: center;
 	white-space: nowrap;
 	vertical-align: middle;
+	border-width: 5px;
+	
 }
 
 
 @media only screen and (min-width: 8000px) {
 	#atlanticList{
-		height: 450px;
+		height: 500px;
 		font-size: 40px;
 	}
 	#pacificList{
-		height: 450px;
+		height: 500px;
 		font-size: 40px;
 	}
 	.listFilter{

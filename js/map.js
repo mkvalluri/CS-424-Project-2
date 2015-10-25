@@ -130,7 +130,17 @@ Map.prototype = {
 		   - Min Pressure: In milibars.
 		*/
 		chart.pointInfo.update = function(elem){
-			var speed = parseFloat(Math.round(elem.properties.maxwind * 1.15078)).toFixed(2);
+			var speedUnit = chart.filter.windunit;
+			var pressureUnit = chart.filter.pressureunit;
+
+			if (speedUnit == 'KPH')
+				var speed = parseFloat(Math.round(elem.properties.maxwind)).toFixed(0);
+			else
+				var speed = parseFloat(Math.round(elem.properties.maxwind * 1.15078)).toFixed(0);
+			if (speedUnit == 'PSI')
+				var pressure = parseFloat(Math.round(elem.properties.minpressure * 0.0145038)).toFixed(2);
+			else
+				var pressure = parseFloat(Math.round(elem.properties.minpressure)).toFixed(0);
 
 			this._div.innerHTML = 
 				'<div class="row">' +
@@ -145,11 +155,11 @@ Map.prototype = {
 						'</div>' + 
 						'<div class="col-md-4">' +
 							'<div>Wind Speed</div>' + 
-							'<div>' + speed + ' mph</div>' +
+							'<div>' + speed + " " + speedUnit +'</div>' +
 						'</div>' +
 						'<div class="col-md-4">' +
 							'<div>Pressure</div>' + 
-							'<div>' + elem.properties.minpressure + ' mb</div>'
+							'<div>' + pressure + ' ' + pressureUnit + '</div>'
 						'</div>' +
 					'</div>' +
 				'</div>';
@@ -286,12 +296,18 @@ Map.prototype = {
 		g.selectAll("circle").remove();
 		g.selectAll(".lineConnect").remove();
 
+		chart.filter = filter;
 		var filteredData = chart.data.features.filter(
 			function(el) { 
 				if (filter.type == "name"){
 					return el.properties.name == filter.name;
 				}else{
-					return  el.properties.timestamp.year >= filter.initial_date.getFullYear() 
+					var fName = true;
+					if (filter.name != '')
+						fName = (el.properties.name == filter.name);
+
+					return  fName
+							&& el.properties.timestamp.year >= filter.initial_date.getFullYear() 
 							&& el.properties.timestamp.month >= (filter.initial_date.getMonth() + 1) 
 							&& el.properties.timestamp.year <= filter.final_date.getFullYear() 
 							&& el.properties.timestamp.month <= (filter.final_date.getMonth() + 1)
