@@ -64,6 +64,16 @@ App.prototype = {
 		self.listAtlantic.loadFilteredData(reducedDataAL, "#atlanticList");
 		self.listPacific.loadFilteredData(reducedDataPA, "#pacificList");
 
+		if (reducedDataAL == undefined)
+			$("#cant-atlantic").html("&nbsp;(0 Results)");
+		else
+			$("#cant-atlantic").html("&nbsp;(" + reducedDataAL.length + " Results)");
+
+		if (reducedDataPA == undefined)
+			$("#cant-pacific").html("&nbsp;(0 Results)");
+		else
+			$("#cant-pacific").html("&nbsp;(" + reducedDataPA.length + " Results)");
+
 		d3.selectAll(".nameLink").on("click", function(d){
 			var hurrId = $(this).attr('id');
 			var paths = d3.selectAll("." + hurrId).style("opacity",1);

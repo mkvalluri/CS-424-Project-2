@@ -7,7 +7,7 @@ List
   overflow-y: scroll;  
 }
 .nameLink{
-	color: #fff !important;
+	color: #000 !important;
 	font-weight: 700;
 	background-color: rgba(0,0,0,0.8);
 	padding: 3px 7px;
@@ -29,6 +29,27 @@ List
 	border-width: 5px;
 	
 }
+.catTD {
+	background-color: rgba(153,216,201,1);
+}
+.catTS {
+	background-color: rgba(44,162,95,1);
+}
+.catH1 {
+	background-color: rgba(255,255,178,1);
+}	
+.catH2 {
+	background-color: rgba(254,204,92,1);
+}	
+.catH3 {
+	background-color: rgba(253,141,60,1);
+}	
+.catH4 {
+	background-color: rgba(240,59,32,1);
+}	
+.catH5 {
+	background-color: rgba(189,0,38,1);
+}	
 
 
 @media only screen and (min-width: 8000px) {
