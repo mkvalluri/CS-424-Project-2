@@ -12,6 +12,8 @@ namespace DataCleanupProj
 
         public string id { get; set; }
 
+        public int day { get; set; }
+
         public int month { get; set; }
 
         public int year { get; set; }
@@ -21,6 +23,8 @@ namespace DataCleanupProj
         public Wind wind { get; set; }
 
         public Pressure pressure { get; set; }
+
+        public string land { get; set; }
 
         public FilteredData()
         {

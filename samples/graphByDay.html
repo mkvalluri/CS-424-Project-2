@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- Bootstrap *must* tags -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>CS424-Project 2: Barchart sample page</title>
+	<script src="../js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="../js/d3.min.js"></script>
+	<!-- D3 -->
+	<script type="text/javascript" src="../js/graphByDay.js"></script>
+	<!-- Barchart -->
+
+	<style>
+		#line-container-wind, #line-container-pressure {
+			width: 600px;
+			height: 400px;
+		}
+		
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		
+		.line {
+			fill: none;
+			stroke: blue;
+			stroke-width: 2px;
+		}
+		
+		.tick line {
+			opacity: 0.2;
+		}
+		
+		.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="line-container-wind"></div>
+	<div id="line-container-pressure"></div>
+	<script>
+		var lineChartWind = null;
+		var lineChartPressure = null;
+		d3.json("../resources/filteredDatav2.json", function(err, data) {
+			if (err) throw err;
+
+			var filter = {};
+			filter.showMax = true;
+			filter.showMin = true;
+			filter.showAvg = true;
+			lineChartWind = new LineChartByDay("#line-container-wind", "max-wind", data, filter, "both");
+			lineChartWind.init();
+			lineChartPressure = new LineChartByDay("#line-container-pressure", "max-pressure", data, filter, "both");
+			lineChartPressure.init();
+		});
+		
+	/*	$('.filter').change(function(){
+			var basin = $('#basin').val();
+			var maxwind =  {};
+			maxwind.min = $('#maxwind_min').val();
+			maxwind.max = $('#maxwind_max').val();
+			if(maxwind.min == "")
+				maxwind.min = 0;
+			if(maxwind.max == "")
+				maxwind.max = 999999;
+			var minpres = {};
+			minpres.min = $('#minpres_min').val();
+			minpres.max = $('#minpres_max').val();
+			if(minpres.min == "")
+				minpres.min = 0;
+			if(minpres.max == "")
+				minpres.max = 999999;
+			
+			var filter = {};
+			filter.max_wind = {};
+			filter.min_pressure = {};
+			filter.max_wind.min = parseFloat(maxwind.min);
+			filter.max_wind.max = parseFloat(maxwind.max);
+			filter.min_pressure.min = parseFloat(minpres.min);
+			filter.min_pressure.max = parseFloat(minpres.max);
+			barChart.update(filter, basin);
+		});*/
+	</script>
+</body>
