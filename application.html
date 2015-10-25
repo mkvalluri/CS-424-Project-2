@@ -17,7 +17,8 @@
     <link rel="stylesheet" href="css/app.css">  <!-- custom styles -->
     <link rel="stylesheet" href="css/map.css">  
     <link rel="stylesheet" href="css/bar.css"> 
-    <link rel="stylesheet" href="css/list.css">  
+    <link rel="stylesheet" href="css/list.css"> 
+    <link rel="stylesheet" href="css/graphByMonth.css">  
 
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -30,6 +31,7 @@
     <script type="text/javascript" src="js/map.js"></script>
     <script type="text/javascript" src="js/repository.js"></script>
     <script type="text/javascript" src="js/list.js"></script>
+    <script type="text/javascript" src="js/graphByMonth.js"></script> 
     <script type="text/javascript" src="js/app.js"></script>
 </head>
 <body>
@@ -129,7 +131,44 @@
             </div>
         </div>
         <div class="col-3">
-            <div class="control2-3"></div>
+            <div class="control2-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-title">Total Hurricanes per Month (1851-2014)</div>
+                    <div id="graph-by-month"></div>
+                    <div id="graph-by-month-filters">
+                        <form class="form-inline" role="form">
+                            <div class="input-group" >
+                                <span class="input-group-addon form-label">Basin</span>
+                                <select class="form-control filter-gm" id="gm-cb-basin">
+                                    <option value="both" selected>Pacific & Atlantic</option>
+                                    <option value="AL">Atlantic</option>
+                                    <option value="EP">Pacific</option>
+                                </select>
+                            </div>      
+                            <div class="input-group" style="width:100%">
+                                <span class="input-group-addon form-label" id="addon-wind">Wind</span>
+                                <input type="text" class="form-control form-label form-wind filter-gm" id="gm-min-wind" value="0" style="width:33.3333%"></input>
+                                <input type="text" class="form-control form-label form-wind filter-gm" id="gm-max-wind" value="200" style="width:33.3333%"></input>
+                                <select class="form-control filter-gm" id="gm-cb-wind-speed" style="width:32%">
+                                    <option value="mph" selected>MPH</option>
+                                    <option value="kph">KPH</option>
+                                </select>
+                            </div>
+                        
+                            <div class="input-group" style="width:100%">
+                                <span class="input-group-addon form-label">Pressure</span>
+                                <input type="text" class="form-control form-label form-wind filter-gm" id="gm-min-pressure" aria-describedby="addon-pressure" value="0" style="width:33.3333%"></input>
+                                <input type="text" class="form-control form-label form-wind filter-gm" id="gm-max-pressure" aria-describedby="addon-pressure" value="2000" style="width:33.3333%"></input>
+                                <select class="form-control filter-gm" id="gm-cb-pressure" style="width:32%">
+                                    <option value="mbar" selected>MBAR</option>
+                                    <option value="psi">PSI</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="control1-3">
                 <div class="col-md-12">
                     <div class="panel panel-default">

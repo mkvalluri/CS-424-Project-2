@@ -84,7 +84,7 @@ BarChartByMonth.prototype = {
 			.append("text")
 			.attr("transform", "translate(" + (bar.width / 2) + "," + (bar.margin.top / 2) + ")")
 			.attr("text-anchor", "middle")
-			.attr("class", "chart-title")
+			.attr("class", "gmchart-title")
 			.text(bar.title);
 	},
 
@@ -135,15 +135,15 @@ BarChartByMonth.prototype = {
 						width: bar.width / bar.filteredData.length - bar.barPadding,
 						height: function(d) {
 							return bar.height - bar.yScale(d.data.length); },
-						class: "bar_rect"
+						class: "gmbar_rect"
 				});
 	
 			bars.exit().transition().duration(500).remove();
 	
 			bars.on("mouseover", function(d){
 				var x = (d3.event.pageX);
-				bar.tooltip.select(".tooltip-year").html(getMonth(d.month) + ": ");
-				bar.tooltip.select(".tooltip-total").html(d.data.length + " events");
+				bar.tooltip.select(".gmtooltip-year").html(getMonth(d.month) + ": ");
+				bar.tooltip.select(".gmtooltip-total").html(d.data.length + " events");
 				bar.tooltip.style("top", (d3.event.pageY) + "px");
 				if (x < bar.width/2)
 					bar.tooltip.style("left", (d3.event.pageX) + "px");
@@ -160,14 +160,14 @@ BarChartByMonth.prototype = {
 		// Append the xAxis and yAxis to the bar chart
 		bar.svg.append("g")
 				.call(bar.xAxis)
-					.attr("class", "x axis")
+					.attr("class", "gmx gmaxis")
 					.attr("transform", "translate(0," + bar.height + ")")
 				.selectAll("text")
 					.attr("transform", "translate(20,0)")
     				.style("text-anchor", "middle");
 		bar.svg.append("g")
 				.call(bar.yAxis)
-					.attr("class", "y axis")
+					.attr("class", "gmy gmaxis")
 					.attr("transform", "translate(-10,0)");
 					
 	},
@@ -195,12 +195,12 @@ BarChartByMonth.prototype = {
 			height: bar.height + bar.margin.top + bar.margin.bottom
 		});
 
-		bar.svg.select(".x.axis")
+		bar.svg.select(".gmx.gmaxis")
 			.call(bar.xAxis.orient("bottom"))
 			.attr("transform", "translate(0," + bar.height + ")");
-		svg.select(".y.axis").call(bar.yAxis.orient("left"));
+		svg.select(".gmy.gmaxis").call(bar.yAxis.orient("left"));
 
-		svg.selectAll(".bar_rect").attr({
+		svg.selectAll(".gmbar_rect").attr({
 			x: function (d, i) { return i * (bar.width / bar.filteredData.length) },
 			y: function (d) { return bar.yScale(d.total); },
 			width: bar.width / bar.filteredData.length - bar.barPadding,
@@ -215,10 +215,10 @@ BarChartByMonth.prototype = {
 
 		bar.filter = filter;
 		bar.basin = basin;
-		d3.selectAll(".bar_rect").remove();
+		d3.selectAll(".gmbar_rect").remove();
 
-		d3.select(".y.axis").remove();
-		d3.select(".x.axis").remove();
+		d3.select(".gmy.gmaxis").remove();
+		d3.select(".gmx.gmaxis").remove();
 
 		self.create();
 	},

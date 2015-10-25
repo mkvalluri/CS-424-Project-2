@@ -1,0 +1,48 @@
+
+.gmaxis path,
+.gmaxis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+.gmaxis text {
+	font-family: sans-serif;
+	/*font-size: 11px;*/
+}
+.gmbar_rect{
+	fill: #1f77b4;
+}
+.gmbar_rect:hover{
+	fill: #ff7f0e;
+	cursor: pointer;
+}
+.gmchart-title{
+	font-family: sans-serif;
+	font-weight: bold;
+	font-size: 14px;
+}
+.gmchart-tooltip{
+	background-color: #eee;
+	box-shadow: 0 0 5px #999999;
+	color: #333;
+	display: none;
+	font-size: 12px;
+	left: 130px;
+	padding: 10px;
+	position: absolute;
+	text-align: center;
+	top: 95px;
+	width: 100px;
+	z-index: 10;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+	font-family: sans-serif;
+}
+.gmtooltip-year{
+	font-weight: bold;
+}

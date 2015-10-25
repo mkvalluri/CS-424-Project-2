@@ -357,6 +357,46 @@ App.prototype = {
 				self.listPacific.filterData(containerId, sortBy, sortByAsending);
 		});
 
+		$('.filter-gm').change(function(){
+			var speedUnit = $('#gm-cb-wind-speed').val();
+			var pressureUnit = $('#gm-cb-pressure').val();
+
+			var basin = $('#gm-cb-basin').val();
+			var maxwind =  {};
+			maxwind.min = $('#gm-min-wind').val();
+			maxwind.max = $('#gm-max-wind').val();
+			if(maxwind.min == "")
+				maxwind.min = 0;
+			if(maxwind.max == "")
+				maxwind.max = 999999;
+			var minpres = {};
+			minpres.min = $('#gm-min-pressure').val();
+			minpres.max = $('#gm-max-pressure').val();
+			if(minpres.min == "")
+				minpres.min = 0;
+			if(minpres.max == "")
+				minpres.max = 999999;
+
+			if (speedUnit == 'kph'){
+				maxwind.min = maxwind.min * 1.60934;
+				maxwind.max = maxwind.max * 1.60934;
+			}
+
+			if (pressureUnit == 'psi'){
+				minpres.min = minpres.min * 0.0145038;
+				minpres.max = minpres.max * 0.0145038;
+			}
+			
+			var filter = {};
+			filter.max_wind = {};
+			filter.min_pressure = {};
+			filter.max_wind.min = parseFloat(maxwind.min);
+			filter.max_wind.max = parseFloat(maxwind.max);
+			filter.min_pressure.min = parseFloat(minpres.min);
+			filter.min_pressure.max = parseFloat(minpres.max);
+			barChart.update(filter, basin);
+		});
+
 		/* set the initial filters */
 		self.mapFilter.landfall = "all";
 		self.mapFilter.initial_date = $('#initial-date').datepicker('getDate');
@@ -394,7 +434,19 @@ App.prototype = {
 					self.bchartPacific.init();
 					self.reducedData = data;
 
-					self.search();	
+					d3.json("./resources/filteredDatav1.json", function(err2, datav1) {
+						var filter = {};
+						filter.max_wind = {};
+						filter.max_wind.min = 0;
+						filter.max_wind.max = 999999;
+						filter.min_pressure = {};
+						filter.min_pressure.min = 0;
+						filter.min_pressure.max = 999999;
+						barChart = new BarChartByMonth("#graph-by-month", "num-hurricanes", datav1, filter, "both");
+						barChart.init();
+
+						self.search();
+					});	
 				});
 			});
 		});

@@ -432,6 +432,17 @@ a.hurr-tooltip:hover span {
 		font-size: 40px;
 		width: 650px;
 	}
+	#graph-by-month{
+		height: 1070px;
+	}
+	.control2-3{
+		width: 98%;
+		margin-left: 10px;
+    	margin-right: 20px;
+	}
+	#gm-cb-basin{
+		width: 920px;
+	}
 
 	/* Leaflet components
    =================================== */
