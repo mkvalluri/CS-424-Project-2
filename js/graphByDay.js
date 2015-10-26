@@ -69,9 +69,9 @@
 		
 		var text = "";
 		if(line.type == "wind")
-			text = "Max Wind Speed";
+			text = "Max Wind Speed (MPH)";
 		else
-			text = "Min Pressure";
+			text = "Min Pressure (MBAR)";
 
 		color.domain(d3.keys(line.data[0])
 			.filter(function(key) { 
