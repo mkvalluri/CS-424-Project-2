@@ -45,6 +45,9 @@ function Map(data, boundaries, target, zoomLevel, heatmap){
 
 	this.chart.heatmap = heatmap;
 	this.chart.animPerDay = null;
+
+	this.chart.legendPath = null;
+	this.chart.legendHeatmap = null;
 }
 
 /* Class methods */
@@ -113,12 +116,11 @@ Map.prototype = {
 	/* Shows an information chart on the bottom left section of the map. The object
 	   is stored as a Leaflet Control and updates its information everytime the 
 	   user hovers on a data point. */
-	createInfoChart: function(){
+	createInfoChart: function(map){
 		var self = this,
 			chart = this.chart;
 
 		chart.pointInfo = L.control({position : 'bottomleft'});
-		var map = chart.map;
 
 		// default information to show when the map is displayed
 		// TODO: Hide?
@@ -200,12 +202,55 @@ Map.prototype = {
 		chart.time.addTo(map);
 	},
 
+	createPathLegend: function(map){
+		var self = this,
+			chart = this.chart;
+
+		chart.legendPath = L.control({position : 'bottomright'});
+
+		chart.legendPath.onAdd = function(map){
+		    var div = L.DomUtil.create('div', 'legend'),
+		        cats = ["TD", "TS", "H1", "H2", "H3", "H4", "H5"];
+
+		    for (var i = 0; i < cats.length; i++) {
+		        div.innerHTML += '<i class="legCat' + cats[i] + '"></i>&nbsp;' + cats[i] + '<br>';
+		    }
+
+		    return div;
+		};
+
+		chart.legendPath.addTo(map);
+	},
+
+	createHeatmapLegend: function(map){
+		var self = this,
+			chart = this.chart;
+
+		chart.legendHeatmap = L.control({position : 'bottomright'});
+
+		chart.legendHeatmap.onAdd = function(map){
+		    var div = L.DomUtil.create('div', 'legendHeatmap'),
+		        num = ["1-800", "800-1600", "1600-2400", "2400-3200", "<3200"];
+
+		    for (var i = 0; i < num.length; i++) {
+		        div.innerHTML += '<i class="legheat' + (i + 1) + '"></i>&nbsp;' + num[i] + ' events<br>';
+		    }
+
+		    return div;
+		};
+
+		chart.legendHeatmap.addTo(map);
+	},
+
 	play: function(filter, rate){
 		var self = this,
 			chart = this.chart;
 
 		d3.selectAll(".waypoints").style("display", "none");
 		d3.selectAll(".lineConnect").style("display", "none");
+		self.createTimeControl();
+		chart.map.removeControl(chart.legendPath);
+		chart.map.removeControl(chart.pointInfo);
 
 		if (chart.animState == 'play'){
 			chart.animState = 'pause';
@@ -304,6 +349,14 @@ Map.prototype = {
 
 		chart.animState = 'stop';
 		clearInterval(chart.playInterval);
+
+		chart.map.removeControl(chart.time);
+		self.createPathLegend(chart.map);
+		self.createInfoChart(chart.map);
+		d3.selectAll(".animpoints").remove();
+		d3.selectAll(".lineConnect").style("display", "block");
+		d3.selectAll(".waypoints").style("display", "block");
+
 	},
 
 	/* Adds the hurricanes to the different map layers based on the filter control.
@@ -617,9 +670,11 @@ Map.prototype = {
 		var dataOverlay = L.Class.extend({
 			initialize: function(){ return; },
 			onAdd: function(map){
+				self.createInfoChart(map);
 				d3.selectAll(".waypoints").style("display", "block");
 			},
 			onRemove: function(map){
+				chart.map.removeControl(chart.pointInfo);
 				d3.selectAll(".waypoints").style("display", "none");
 			}
 		});
@@ -627,9 +682,11 @@ Map.prototype = {
 		var pathOverlay = L.Class.extend({
 			//initialize: function(){ return; },
 			onAdd: function(map){
+				self.createPathLegend(map);
 				d3.selectAll(".lineConnect").style("display", "block");
 			},
 			onRemove: function(map){
+				chart.map.removeControl(chart.legendPath);
 				d3.selectAll(".lineConnect").style("display", "none");
 			}
 		});
@@ -638,12 +695,17 @@ Map.prototype = {
 			//initialize: function(){ return; },
 			onAdd: function(map){
 				self.drawHeatMap();
-				//d3.selectAll(".heatmap").style("display", "block");
+				chart.map.removeControl(chart.legendPath);
+				chart.map.removeControl(chart.pointInfo);
+				self.createHeatmapLegend(map);
 				d3.selectAll(".lineConnect").style("display", "none");
 				d3.selectAll(".waypoints").style("display", "none");
 				self.reset();
 			},
 			onRemove: function(map){
+				self.createPathLegend(map);
+				self.createInfoChart(map);
+				chart.map.removeControl(chart.legendHeatmap);
 				d3.selectAll(".heatmap").remove();
 				d3.selectAll(".lineConnect").style("display", "block");
 				d3.selectAll(".waypoints").style("display", "block");
@@ -692,10 +754,6 @@ Map.prototype = {
 			self.reset();
 		});
 
-		self.createInfoChart();
-		self.createTimeControl();
-		self.addBoundaries();
-		//self.drawHeatMap();
 	} // end init function
 }
 
