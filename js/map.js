@@ -153,6 +153,16 @@ Map.prototype = {
 			else
 				var pressure = parseFloat(Math.round(elem.properties.minpressure)).toFixed(0);
 
+			if (speed == -99){
+				speed = "N/A";
+				speedUnit = "";
+			}
+
+			if (pressure == -999){
+				pressure = "N/A";
+				pressureUnit = "";
+			}
+
 			this._div.innerHTML = 
 				'<div class="row">' +
 					'<div class="col-md-12">' + 
