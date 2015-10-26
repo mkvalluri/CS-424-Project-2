@@ -16,7 +16,7 @@
 
 .gbdline {
 	fill: none;
-	stroke: steelblue;
+	stroke: rgba(200, 10, 10, 0.8);
 	stroke-width: 1.5px;
 }
 
@@ -36,7 +36,7 @@
 	}
 	.gbdline {
 		fill: none;
-		stroke: steelblue;
+		stroke: rgba(200, 10, 10, 0.8);
 		stroke-width: 1.5px;
 	}
 	.gbdaxis text {
@@ -50,7 +50,7 @@
 	}
 	.gbdline {
 		fill: none;
-		stroke: steelblue;
+		stroke: rgba(200, 10, 10, 0.8);
 		stroke-width: 5px;
 	}
 	.gbdaxis text {

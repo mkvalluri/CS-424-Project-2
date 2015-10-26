@@ -122,6 +122,16 @@ BarChartByMonth.prototype = {
 						.ticks(10)
 						.tickFormat(function(d){ return d });
 
+		bar.svg.selectAll("line.y")
+			.data(bar.yScale.ticks(10))
+			 .enter().append("line")
+			 .attr("class", "y")
+			 .attr("x1", 0)
+			 .attr("x2", bar.width)
+			 .attr("y1", bar.yScale)
+			 .attr("y2", bar.yScale)
+			 .style("stroke", "#ccc");
+
 		if(bar.maxYValue != 0)
 		{
 			// Bind bars (svg rectangles) to data

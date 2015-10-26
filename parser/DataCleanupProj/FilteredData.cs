@@ -12,6 +12,10 @@ namespace DataCleanupProj
 
         public string id { get; set; }
 
+        public string startDate { get; set;}
+
+        public string endDate { get; set; }
+        
         public int day { get; set; }
 
         public int month { get; set; }

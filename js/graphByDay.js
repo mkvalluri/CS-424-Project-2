@@ -39,7 +39,7 @@
 			
 			bar.svg.append("g")
 			.append("text")
-			.attr("transform", "translate(" + (bar.width / 2) + "," + (bar.margin.top / 2 - 10) + ")")
+			.attr("transform", "translate(" + (bar.width / 2) + "," + (bar.margin.top / 2 - 25) + ")")
 			.attr("text-anchor", "middle")
 			.attr("class", "gdbchart-title")
 			.text(bar.title);
@@ -105,8 +105,7 @@
 
 		lineContainer.append("path")
 		.attr("class", "gbdline")
-		.attr("d", function(d) {return lineT(d.values);})
-		.style("stroke", function(d) {return color(d.name);});
+		.attr("d", function(d) {return lineT(d.values);});
 
 		// Append the xAxis and yAxis to the bar chart
 		line.svg.append("g")
@@ -214,8 +213,8 @@
 		canvasHeight = d3.select(line.tag).style("height");
 
 		/* Set the canvas size based on mbostock's best practices */
-		line.width = parseInt(canvasWidth) - line.margin.left - line.margin.right,
-		line.height = parseInt(canvasHeight) - line.margin.top - line.margin.bottom;
+		line.width = parseInt(canvasWidth) - line.margin.left - line.margin.right - 10,
+		line.height = parseInt(canvasHeight) - line.margin.top - line.margin.bottom - 20;
 
 		/* Create the bar:onhover information tooltip */
 		//self.createTooltip();
@@ -231,7 +230,7 @@
 			height: line.height + line.margin.top + line.margin.bottom
 		})
 		.append("g")
-		.attr("transform", "translate(" + line.margin.left + "," + line.margin.top + ")");
+		.attr("transform", "translate(" + (line.margin.left + 10) + "," + line.margin.top + ")");
 		self.create();
 		self.setTitle();
 	}

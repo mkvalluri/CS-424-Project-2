@@ -45,7 +45,7 @@ namespace DataCleanupProj
             //File.WriteAllText(@"D:\Projects\data.json", finalData);
 
             finalData = JsonConvert.SerializeObject(filteredData, settings);
-            //File.WriteAllText(@"D:\Projects\filteredData.json", finalData);
+            File.WriteAllText(@"D:\Projects\filteredData.json", finalData);
 
             finalData = JsonConvert.SerializeObject(hurricaneNames, settings);
             //File.WriteAllText(@"D:\Projects\hurricaneListNames.json", str);
@@ -78,6 +78,9 @@ namespace DataCleanupProj
             List<int> day = new List<int>();
             FilteredData tempFilteredData;
 
+            string startDate = "";
+            string endDate = "";
+
             float wMin = 99999999.0f;
             float wMax = 0.0f;
             float wAvg = 0.0f;
@@ -88,6 +91,7 @@ namespace DataCleanupProj
 
             int countW = 0;
             int countP = 0;
+            int index = 0;
 
             foreach (var line in data)
             {
@@ -117,6 +121,11 @@ namespace DataCleanupProj
                             day.Add(tempFeature.properties.timestamp.day);
                         }
                     }
+                    if(index == 0)
+                    {
+                        startDate = tempLines[0];
+                    }
+                    endDate = tempLines[0];
                     tempFeature.properties.l = tempLines[2].Trim();
                     tempFeature.properties.ts = tempLines[3].Trim();
                     tempFeature.properties.latitude = tempLines[4].Trim();
@@ -154,6 +163,7 @@ namespace DataCleanupProj
                     tempFeature.properties.q50 = GetQuarter(tempLines[12].Trim(), tempLines[13].Trim(), tempLines[14].Trim(), tempLines[15].Trim());
                     tempFeature.properties.q64 = GetQuarter(tempLines[16].Trim(), tempLines[17].Trim(), tempLines[18].Trim(), tempLines[19].Trim());
                     features.Add(tempFeature);
+                    index++;
                 }
                 else
                 {
@@ -171,6 +181,8 @@ namespace DataCleanupProj
                         tempFilteredData.name = name;
                         tempFilteredData.id = id;
                         tempFilteredData.year = year;
+                        tempFilteredData.startDate = startDate;
+                        tempFilteredData.endDate = endDate;
                         tempFilteredData.basin = basin;
                         tempFilteredData.wind.avg = wAvg;
                         tempFilteredData.wind.max = wMax;
@@ -209,6 +221,7 @@ namespace DataCleanupProj
                     year = Convert.ToInt32(tempLines[0].Trim().Substring(4, 4));
                     month = new List<int>();
                     day = new List<int>();
+                    index = 0;
                     
                 }
             }
