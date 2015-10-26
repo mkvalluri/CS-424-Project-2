@@ -83,10 +83,23 @@ svg {
 }
 
 .heatmap{
-	fill: #000;
-	fill-opacity: .2;
 	stroke: #fff;
   	stroke-width: 1.5px;
+}
+.heat1{
+	fill: rgba(254,229,217,0.4);
+}
+.heat2{
+	fill: rgba(252,187,161,0.4);
+}
+.heat3{
+	fill: rgba(252,146,114,0.4);
+}
+.heat4{
+	fill: rgba(251,106,74,0.4);
+}
+.heat5{
+	fill: rgba(222,45,38,0.4);
 }
 
 @media only screen and (min-width: 8000px) {

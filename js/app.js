@@ -425,12 +425,12 @@ App.prototype = {
 		self.createBarLegendTooltip();
 
 		var boundaries = [];
-		//d3.json("./resources/geojson/boundaries_admin_1.geojson", function(err0, bData){
+		d3.json("./resources/heatmapData.json", function(err0, heatmapData){
 		//	boundaries.push(bData);
 
 			d3.json("./resources/data.json", function(err1, collection){
 				if (err1) throw err1;
-				mainMap = new Map(collection, boundaries, "map-container", 5);
+				mainMap = new Map(collection, boundaries, "map-container", 5, heatmapData);
 				mainMap.init();
 				self.map = mainMap;
 
@@ -458,6 +458,6 @@ App.prototype = {
 					});	
 				});
 			});
-		//});
+		});
 	}
 }

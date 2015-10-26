@@ -12,7 +12,7 @@
 */
 
 /* Class constructor and attributes */
-function Map(data, boundaries, target, zoomLevel){
+function Map(data, boundaries, target, zoomLevel, heatmap){
 	this.chart = {};
 
 	this.chart.data = data;				// Holds all the NHC dataset
@@ -42,6 +42,8 @@ function Map(data, boundaries, target, zoomLevel){
 	this.chart.animState = 'stop';		// stop, play, pause
 	this.chart.playInterval = null;
 	this.chart.dimByDate = null;
+
+	this.chart.heatmap = heatmap;
 }
 
 /* Class methods */
@@ -474,6 +476,11 @@ Map.prototype = {
 		}
 	}, // end reset function
 
+	/* Draws a heatmap overlay. The data is gather from a json array. We know there 
+	   are 73 columns per row in the heatmap data (it can be also calculated from 
+	   the y0 and y1 values). Thus, we are accesing to the data based on item position
+	   rather than filtering the array. Filtering took 30 seconds while random access
+	   takes about 2  */
 	drawHeatMap: function(){
 		var self = this,
 			chart = this.chart;
@@ -485,19 +492,41 @@ Map.prototype = {
 
 		var g = chart.svgDataLayer.select("g");
 		var i = x0;
+		var n = 0;
+		var m = 0;
 		while(i < x1){
 			var j = y0;
 			while (j > y1){
-				var squareData = [ [{ "x": i, "y":j }, { "x": i + 0.9, "y":j }],
-								   [{ "x": i+0.9, "y":j }, { "x": i + 0.9, "y":j+0.9 }],
-								   [{ "x": i+0.9, "y":j+0.9 }, { "x": i, "y":j+0.9 }],
-		  						   [{ "x": i, "y":j+0.9 }, { "x": i, "y":j }]];
-		  		g.append("path")
-				     .datum([squareData])
-			         .attr("class", "heatmap");
+				/*var heatData = chart.heatmap.filter(function(el){
+					return el.Square[0].line[0].x == i && el.Square[0].line[0].y == j;
+				}); First test using filtering*/
+				heatData = chart.heatmap[n + 73*m];
+				if (heatData.Count > 0){
+					var squareData = [ [{ "x": i, "y":j }, { "x": i + 0.9, "y":j }],
+									   [{ "x": i+0.9, "y":j }, { "x": i + 0.9, "y":j+0.9 }],
+									   [{ "x": i+0.9, "y":j+0.9 }, { "x": i, "y":j+0.9 }],
+			  						   [{ "x": i, "y":j+0.9 }, { "x": i, "y":j }]];
+			  		g.append("path")
+					     .datum([squareData])
+				         .attr("class", function(){
+				         	if (heatData.Count < 800)
+				         		return "heatmap heat1";
+				         	else if (heatData.Count < 1600)
+				         		return "heatmap heat2";
+				         	else if (heatData.Count < 2400)
+				         		return "heatmap heat3";
+				         	else if (heatData.Count < 3200)
+				         		return "heatmap heat4";
+				         	else
+								return "heatmap heat5";
+				         });
+			     }
 				j = j - 0.9;
+				n = n + 1;
 			}
 			i = i + 0.9;
+			m = m + 1;
+			n = 0;
 		}
 	},
 
