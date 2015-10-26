@@ -1,3 +1,33 @@
+.legend {
+    line-height: 18px;
+    background: black;
+	background: rgba(0,0,0,0.8);
+	box-shadow: 0 0 30px rgba(0,0,0,0.2);
+	border-radius: 15px;
+	color: white;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+.legendHeatmap {
+    line-height: 18px;
+    background: black;
+	background: rgba(0,0,0,0.8);
+	box-shadow: 0 0 30px rgba(0,0,0,0.2);
+	border-radius: 15px;
+	color: white;
+}
+.legendHeatmap i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
 .info {
 	height: 80px;
 	width: 450px;
@@ -63,6 +93,27 @@
 	fill: none;
 	stroke-width:10;
 }
+.legCatTS{
+	background-color: rgba(44,162,95,0.8);
+}
+.legCatTD{
+	background-color: rgba(153,216,201,0.8);
+}
+.legCatH1{
+	background-color: rgba(255,255,178,0.8);
+}
+.legCatH2{
+	background-color: rgba(254,204,92,0.8);
+}
+.legCatH3{
+	background-color: rgba(253,141,60,0.8);
+}
+.legCatH4{
+	background-color: rgba(240,59,32,0.8);
+}
+.legCatH5{
+	background-color: rgba(189,0,38,0.8);
+}
 svg {
 	  position: relative;
 }
@@ -106,8 +157,59 @@ svg {
 .heat5{
 	fill: rgba(222,45,38,0.4);
 }
+.legheat1{
+	background-color: rgba(254,229,217,0.4);
+}
+.legheat2{
+	background-color: rgba(252,187,161,0.4);
+}
+.legheat3{
+	background-color: rgba(252,146,114,0.4);
+}
+.legheat4{
+	background-color: rgba(251,106,74,0.4);
+}
+.legheat5{
+	background-color: rgba(222,45,38,0.4);
+}
+
+@media only screen and (min-width: 1000px) {
+	.legend {
+		width: 70px;
+		height: 100px;
+		font: 10px Arial, Helvetica, sans-serif;
+		padding: 10px;
+	}
+	.legendHeatmap {
+		width: 150px;
+		height: 100px;
+		font: 10px Arial, Helvetica, sans-serif;
+		padding: 10px;
+	}	
+	.legend i, .legendHeatmap i {
+		width: 10px;
+		height: 10px;
+	}
+}
+
 
 @media only screen and (min-width: 8000px) {
+	.legend {
+		width: 300px;
+		height: 480px;
+		font: 50px Arial, Helvetica, sans-serif;
+		padding: 50px;
+	}
+	.legend i, .legendHeatmap i {
+		width: 50px;
+		height: 50px;
+	}
+	.legendHeatmap {
+		width: 600px;
+		height: 400px;
+		font: 50px Arial, Helvetica, sans-serif;
+		padding: 50px;
+	}	
 	.info {
 		height: 200px;
 		width: 1400px;
