@@ -127,6 +127,8 @@ namespace DataCleanupProj
                     }
                     endDate = tempLines[0];
                     tempFeature.properties.l = tempLines[2].Trim();
+                    if(land != "L")
+                        land = tempFeature.properties.l;
                     tempFeature.properties.ts = tempLines[3].Trim();
                     tempFeature.properties.latitude = tempLines[4].Trim();
                     tempFeature.properties.longitude = tempLines[5].Trim();
@@ -190,6 +192,7 @@ namespace DataCleanupProj
                         tempFilteredData.pressure.avg = pAvg;
                         tempFilteredData.pressure.min = pMin;
                         tempFilteredData.pressure.max = pMax;
+                        tempFilteredData.land = land;
                         filteredData.Add(tempFilteredData);
 
                         foreach (var m in month)
@@ -222,6 +225,7 @@ namespace DataCleanupProj
                     month = new List<int>();
                     day = new List<int>();
                     index = 0;
+                    land = "";
                     
                 }
             }
