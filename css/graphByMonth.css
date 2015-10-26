@@ -46,3 +46,21 @@
 .gmtooltip-year{
 	font-weight: bold;
 }
+
+@media only screen and (min-width: 1000px){
+	#graph-by-month{
+		height: 330px;
+		width: 100%;
+	}
+}
+
+@media only screen and (min-width: 8000px){
+	.gmchart-tooltip{
+		font-size: 40px;
+		width: 450px;
+		height: 80px;
+	}
+	#graph-by-month{
+		height: 1070px;
+	}
+}

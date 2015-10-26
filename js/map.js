@@ -44,6 +44,7 @@ function Map(data, boundaries, target, zoomLevel, heatmap){
 	this.chart.dimByDate = null;
 
 	this.chart.heatmap = heatmap;
+	this.chart.animPerDay = null;
 }
 
 /* Class methods */
@@ -220,9 +221,8 @@ Map.prototype = {
 			}
 
 			chart.animState = 'play';
+			var i = 0;
 			chart.playInterval = setInterval(function() {
-	        	chart.time.update(chart.animCurrDate);
-
 	        	/*
 	        	var filteredPoints = chart.filteredData.filter(
 	        		function(el) { 
@@ -232,27 +232,41 @@ Map.prototype = {
 	        	});*/
 	        	// month starts at 0
 	        	
-	        	var tomorrow = new Date(chart.animCurrDate);
-				tomorrow.setDate(chart.animCurrDate.getDate() + 1);
+	        	//var tomorrow = new Date(chart.animCurrDate);
+				//tomorrow.setDate(chart.animCurrDate.getDate() + 1);
 
-				chart.dimByDate.filterAll();
-				chart.dimByDate.filter([chart.animCurrDate, tomorrow]);
-				var da = chart.dimByDate.top(Infinity);
+				//chart.dimByDate.filterAll();
+				//chart.dimByDate.filter([chart.animCurrDate, tomorrow]);
+				//var da = chart.dimByDate.top(Infinity);
 
 	        	var g = chart.svgDataLayer.select("g");
 	        	var zoomLevel = chart.map.getZoom();
 	        	g.selectAll(".animpoints").remove();
+
+	        	var da = chart.animPerDay[i].points;
 	        	if (da.length > 0){
 	        		self.addWindPoints(g, da, "q34", zoomLevel);
 	        		self.addWindPoints(g, da, "q50", zoomLevel);
 	        		self.addWindPoints(g, da, "q64", zoomLevel);
+
+	        		if (chart.filter.type != "other")
+	        			chart.time.update(da[0].properties.timestamp.date);
 	        		self.reset();
 	        	}
+
+	        	if (chart.filter.type == "other")
+					chart.time.update(chart.animCurrDate);
+
 	            chart.animCurrDate.setDate(chart.animCurrDate.getDate() + 1);
 
+				i++;
+	            if (i >= chart.animPerDay.length)
+	            	clearInterval(chart.playInterval);
+
+	            /*
 	            if (chart.animCurrDate > chart.animEndDate) {
 	                clearInterval(chart.playInterval);
-	            }
+	            }*/
         	}, rate);
 		};
 	},
@@ -268,6 +282,11 @@ Map.prototype = {
              	if (type == "q34") w = d.properties.q34;
              	else if (type == "q50") w = d.properties.q50;
              	else if (type == "q64") w = d.properties.q64;
+
+             	if (w.ne == -999) w.ne = 0;
+             	if (w.se == -999) w.se = 0;
+             	if (w.nw == -999) w.nw = 0;
+             	if (w.sw == -999) w.sw = 0;
              	avg = (w.ne + w.se + w.nw + w.sw)/4;
              	if (avg == 0) return 5;
              	else{
@@ -378,6 +397,59 @@ Map.prototype = {
 		chart.dimByDate = cf.dimension(function(d){
 			return d.properties.timestamp.date;
 		});
+
+		if (filter.type == "other"){
+			var animPerDay = [];
+			var temp_date = chart.filter.initial_date;
+			while (temp_date < chart.filter.final_date){
+				var elem = {};
+				elem.date = new Date(temp_date);
+				elem.points = [];
+				animPerDay.push(elem);
+
+				temp_date.setDate(temp_date.getDate() + 1);
+			}
+
+			for (var i = 0; i < animPerDay.length; i++){
+				for (var j = 0; j < chart.filteredData.length; j++){
+					if (animPerDay[i].date.getFullYear() == chart.filteredData[j].properties.timestamp.year
+						&& (animPerDay[i].date.getMonth() + 1) == chart.filteredData[j].properties.timestamp.month
+						&& animPerDay[i].date.getDate() == chart.filteredData[j].properties.timestamp.day){
+						animPerDay[i].points.push(chart.filteredData[j]);
+					} 
+				}
+			}
+			self.chart.animPerDay = animPerDay;
+
+		} else{	// case when just search by name
+			var animPerDay = [];
+			var temp_date = chart.filteredData[0].properties.timestamp.date;
+			while (temp_date < chart.filteredData[chart.filteredData.length-1].properties.timestamp.date){
+				var elem = {};
+				elem.date = new Date(temp_date);
+				elem.points = [];
+				animPerDay.push(elem);
+
+				temp_date.setDate(temp_date.getDate() + 1);
+			}
+
+			for (var i = 0; i < animPerDay.length; i++){
+				for (var j = 0; j < chart.filteredData.length; j++){
+					if (animPerDay[i].date.getFullYear() == chart.filteredData[j].properties.timestamp.year
+						&& (animPerDay[i].date.getMonth() + 1) == chart.filteredData[j].properties.timestamp.month
+						&& animPerDay[i].date.getDate() == chart.filteredData[j].properties.timestamp.day){
+						animPerDay[i].points.push(chart.filteredData[j]);
+					} 
+				}
+			}
+			var redAnimPoints = [];
+			for (var i = 0; i < animPerDay.length; i++){
+				if (animPerDay[i].points.length != 0)
+					redAnimPoints.push(animPerDay[i]);
+			}
+
+			self.chart.animPerDay = redAnimPoints;
+		}
 
 		self.reset();
 
@@ -528,7 +600,7 @@ Map.prototype = {
 			m = m + 1;
 			n = 0;
 		};
-		d3.selectAll(".heatmap").style("display", "none");
+		//d3.selectAll(".heatmap").style("display", "none");
 	},
 
 	init: function(){
@@ -565,12 +637,14 @@ Map.prototype = {
 		var heatmapOverlay = L.Class.extend({
 			//initialize: function(){ return; },
 			onAdd: function(map){
-				d3.selectAll(".heatmap").style("display", "block");
+				self.drawHeatMap();
+				//d3.selectAll(".heatmap").style("display", "block");
 				d3.selectAll(".lineConnect").style("display", "none");
 				d3.selectAll(".waypoints").style("display", "none");
+				self.reset();
 			},
 			onRemove: function(map){
-				d3.selectAll(".heatmap").style("display", "none");
+				d3.selectAll(".heatmap").remove();
 				d3.selectAll(".lineConnect").style("display", "block");
 				d3.selectAll(".waypoints").style("display", "block");
 			}
@@ -621,7 +695,7 @@ Map.prototype = {
 		self.createInfoChart();
 		self.createTimeControl();
 		self.addBoundaries();
-		self.drawHeatMap();
+		//self.drawHeatMap();
 	} // end init function
 }
 

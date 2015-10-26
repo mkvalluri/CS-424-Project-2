@@ -426,7 +426,6 @@ App.prototype = {
 
 		var boundaries = [];
 		d3.json("./resources/heatmapData.json", function(err0, heatmapData){
-		//	boundaries.push(bData);
 
 			d3.json("./resources/data.json", function(err1, collection){
 				if (err1) throw err1;
@@ -453,6 +452,27 @@ App.prototype = {
 						filter.min_pressure.max = 999999;
 						barChart = new BarChartByMonth("#graph-by-month", "num-hurricanes", datav1, filter, "both");
 						barChart.init();
+
+						var lineChartWind = null;
+						var lineChartPressure = null;
+						d3.csv("./resources/filteredDatav3.csv", function(err3, dataline) {
+							if (err3) throw err3;
+							
+							var parseDate = d3.time.format("%Y%m%d").parse;
+							
+							dataline.forEach(function(d) {
+								d.date = parseDate(d.date);
+							});
+
+							var filter = {};
+							filter.showMax = true;
+							filter.showMin = true;
+							filter.showAvg = true;
+							lineChartWind = new LineChartByDay("#line-container-wind", "wind", dataline);
+							lineChartWind.init();
+							lineChartPressure = new LineChartByDay("#line-container-pressure", "pressure", dataline);
+							lineChartPressure.init();
+						});
 
 						self.search();
 					});	

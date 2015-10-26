@@ -41,7 +41,7 @@
 			.append("text")
 			.attr("transform", "translate(" + (bar.width / 2) + "," + (bar.margin.top / 2 - 10) + ")")
 			.attr("text-anchor", "middle")
-			.attr("class", "gmchart-title")
+			.attr("class", "gdbchart-title")
 			.text(bar.title);
 		},
 
@@ -101,23 +101,23 @@
 		var lineContainer = line.svg.selectAll(".lineData")
 		.data(ds)
 		.enter().append("g")
-		.attr("class", "lineData");
+		.attr("class", "gbdlineData");
 
 		lineContainer.append("path")
-		.attr("class", "line")
+		.attr("class", "gbdline")
 		.attr("d", function(d) {return lineT(d.values);})
 		.style("stroke", function(d) {return color(d.name);});
 
 		// Append the xAxis and yAxis to the bar chart
 		line.svg.append("g")
 		.call(line.xAxis)
-		.attr("class", "x axis")
+		.attr("class", "x gbdaxis")
 		.attr("transform", "translate(0," + line.height + ")")
 		.selectAll("text")
 		.attr("transform", "translate(20,0)");
 
 		line.svg.append("g")
-		.attr("class", "y axis")
+		.attr("class", "y gbdaxis")
 		.call(line.yAxis)
 		.append("text")
 		.attr("transform", "rotate(-90)")
@@ -138,7 +138,7 @@
 		.attr("dy", ".35em");
 
 		line.svg.append("rect")
-		.attr("class", "overlay")
+		.attr("class", "gbdoverlay")
 		.attr("width", line.width)
 		.attr("height", line.height)
 		.on("mouseover", function() { focus.style("display", null); })

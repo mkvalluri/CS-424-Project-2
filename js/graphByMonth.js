@@ -93,11 +93,11 @@ BarChartByMonth.prototype = {
 
 		bar.tooltip = d3.select(bar.tag)
 			.append("div")
-			.attr("class", "chart-tooltip");
+			.attr("class", "gmchart-tooltip");
 		bar.tooltip.append("span")
-			.attr("class", "tooltip-year");
+			.attr("class", "gm-tooltip-year");
 		bar.tooltip.append("span")
-			.attr("class", "tooltip-total");
+			.attr("class", "gm-tooltip-total");
 	},
 
 	create: function () {
@@ -142,14 +142,15 @@ BarChartByMonth.prototype = {
 	
 			bars.on("mouseover", function(d){
 				var x = (d3.event.pageX);
-				bar.tooltip.select(".gmtooltip-year").html(getMonth(d.month) + ": ");
-				bar.tooltip.select(".gmtooltip-total").html(d.data.length + " events");
+				bar.tooltip.select(".gm-tooltip-year").html(getMonth(d.month) + ": ");
+				bar.tooltip.select(".gm-tooltip-total").html(d.data.length + " events");
 				bar.tooltip.style("top", (d3.event.pageY) + "px");
 				if (x < bar.width/2)
 					bar.tooltip.style("left", (d3.event.pageX) + "px");
 				else 
 					bar.tooltip.style("left", (d3.event.pageX) - 110 + "px");
 				bar.tooltip.style("display", "block");
+				var x = 1;
 			});
 			bars.on("mouseout", function(d){
 				bar.tooltip.style("display", "none");

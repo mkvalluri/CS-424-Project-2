@@ -1,0 +1,59 @@
+.gbdaxis path,
+.gbdaxis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.gbdtick line {
+	opacity: 0.2;
+}
+
+.gbdaxis text {
+	font-family: sans-serif;
+	font-size: 11px;
+}
+
+.gbdline {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+}
+
+.gbdoverlay {
+	fill: none;
+	pointer-events: all;
+	font-weight: bold;
+	cursor: pointer;
+}
+.gdbchart-title {
+	font-family: sans-serif;
+}
+
+@media only screen and (min-width: 1000px){
+	.gdbchart-title {
+	    font-size: 9px !important;
+	}
+	.gbdline {
+		fill: none;
+		stroke: steelblue;
+		stroke-width: 1.5px;
+	}
+	.gbdaxis text {
+		font-size: 9px;
+	}
+}
+
+@media only screen and (min-width: 8000px){
+	.gdbchart-title {
+	    font-size: 40px !important;
+	}
+	.gbdline {
+		fill: none;
+		stroke: steelblue;
+		stroke-width: 5px;
+	}
+	.gbdaxis text {
+		font-size: 35px;
+	}
+}
