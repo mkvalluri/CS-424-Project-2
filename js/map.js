@@ -527,7 +527,8 @@ Map.prototype = {
 			i = i + 0.9;
 			m = m + 1;
 			n = 0;
-		}
+		};
+		d3.selectAll(".heatmap").style("display", "none");
 	},
 
 	init: function(){
@@ -564,10 +565,14 @@ Map.prototype = {
 		var heatmapOverlay = L.Class.extend({
 			//initialize: function(){ return; },
 			onAdd: function(map){
-				// TODO
+				d3.selectAll(".heatmap").style("display", "block");
+				d3.selectAll(".lineConnect").style("display", "none");
+				d3.selectAll(".waypoints").style("display", "none");
 			},
 			onRemove: function(map){
-				// TODO
+				d3.selectAll(".heatmap").style("display", "none");
+				d3.selectAll(".lineConnect").style("display", "block");
+				d3.selectAll(".waypoints").style("display", "block");
 			}
 		});
 

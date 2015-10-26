@@ -58,6 +58,11 @@
 	stroke-width:7;
 	stroke: rgba(189,0,38,0.8);
 }	
+.lineHighlight{
+	stroke: white;
+	fill: none;
+	stroke-width:10;
+}
 svg {
 	  position: relative;
 }
@@ -84,7 +89,7 @@ svg {
 
 .heatmap{
 	stroke: #fff;
-  	stroke-width: 1.5px;
+  	stroke-width: 0.5px;
 }
 .heat1{
 	fill: rgba(254,229,217,0.4);

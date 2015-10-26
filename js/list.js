@@ -63,6 +63,10 @@ HurricaneList.prototype = {
 				var hurr = self.data.filter(function(el){ return el.id == id; });
 				hurr = hurr[0];
 
+				/* hightlight line */
+				d3.selectAll("." + id).classed("lineHighlight", true);
+
+				/* show tooltip information */
 				var cat = self.getHurricaneCategory(hurr.wind.max);
 				if (self.speedUnit == 'kph'){
 					hurr.wind.max = parseFloat(Math.round(hurr.wind.max * 1.60934)).toFixed(0);
@@ -104,6 +108,8 @@ HurricaneList.prototype = {
 
 			})
 			.on("mouseout", function(){
+				var id = $(this).attr('id');
+				d3.selectAll("." + id).classed("lineHighlight", false);
 				var tooltip = d3.select(".hurr-tooltip");
 				tooltip.style("display", "none");
 			});		
