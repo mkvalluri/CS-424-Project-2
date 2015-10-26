@@ -364,7 +364,7 @@ Map.prototype = {
 	   independently between two data points per hurricane as it is needed to show
 	   a different thickness or color depending of the current status.
 	*/
-	addHurricane: function(filter){
+	addHurricane: function(filter, ids){
 		var self = this,
 			chart = this.chart,
 			map = chart.map;
@@ -379,6 +379,8 @@ Map.prototype = {
 		chart.filter = filter;
 		var filteredData = chart.data.features.filter(
 			function(el) { 
+				return  (ids.indexOf(el.properties.id) > -1);
+				/*
 				if (filter.type == "name"){
 					return el.properties.name == filter.name;
 				}else{
@@ -395,7 +397,7 @@ Map.prototype = {
 							&& el.properties.maxwind <= filter.max_wind
 							&& el.properties.minpressure >= filter.min_pressure
 							&& el.properties.minpressure <= filter.max_pressure;
-				}
+				}*/
 			}
 		);
 
