@@ -3,60 +3,50 @@
 /* global d3 */
 /*
 	Line chart for showing the number of hurricanes per day for all the years
-*/
-function LineChartByDay(target, type, data) {
-	this.chart = {};
-	this.chart.margin = { top: 50, right: 20, bottom: 40, left: 80 };
-	this.chart.height = 0;
-	this.chart.width = 0;
+	*/
+	function LineChartByDay(target, type, data) {
+		this.chart = {};
+		this.chart.margin = { top: 50, right: 20, bottom: 40, left: 80 };
+		this.chart.height = 0;
+		this.chart.width = 0;
 
-	this.chart.svg = null;
-	this.chart.tooltip = null;
-	this.chart.svg = null;
-	this.chart.tag = target;
-	this.chart.type = type;
-	this.chart.title = "";
+		this.chart.svg = null;
+		this.chart.tooltip = null;
+		this.chart.svg = null;
+		this.chart.tag = target;
+		this.chart.type = type;
+		this.chart.title = "";
 
-	this.chart.data = data;
+		this.chart.data = data;
 
-	this.chart.xScale = null;
-	this.chart.yScale = null;
-	this.chart.xAxis = null;
-	this.chart.yAxis = null;
+		this.chart.xScale = null;
+		this.chart.yScale = null;
+		this.chart.xAxis = null;
+		this.chart.yAxis = null;
 
-	this.chart.barPadding = 1;
-}
+		this.chart.barPadding = 1;
+	}
 
-LineChartByDay.prototype = {
-	constructor: LineChartByDay,
+	LineChartByDay.prototype = {
+		constructor: LineChartByDay,
 
-	setTitle: function () {
-		var bar = this.chart;
+		setTitle: function () {
+			var bar = this.chart;
 
-		if (bar.type == "num-hurricanes") {
-			bar.title = "Hurricanes per month in the ";
-			if (bar.basin == "AL")
-				bar.title = bar.title + " Atlantic Ocean";
-			else
-				bar.title = bar.title + " North East Pacific Ocean";
-		} else if (bar.type == "max-wind")
-			bar.title = "Max. Wind Speed per Year";
-		else if (bar.type == "min-pressure")
-			bar.title = "Min. Pressure per Year";
-		else
-			bar.title = "Unknown";
-		bar.title = bar.title + " (" + bar.filter.year_init + " - " + bar.filter.year_end + ")";
-
-		bar.svg.append("g")
+			bar.title = "Max. Wind Speed per day over an year";
+			if (bar.type == "pressure")
+				bar.title = "Min. Pressure per day over an Year";
+			
+			bar.svg.append("g")
 			.append("text")
-			.attr("transform", "translate(" + (bar.width / 2) + "," + (bar.margin.top / 2) + ")")
+			.attr("transform", "translate(" + (bar.width / 2) + "," + (bar.margin.top / 2 - 10) + ")")
 			.attr("text-anchor", "middle")
 			.attr("class", "gmchart-title")
 			.text(bar.title);
-	},
+		},
 
-	create: function () {
-		var self = this,
+		create: function () {
+			var self = this,
 			line = this.chart;
 
 		// Configure scales and axis
@@ -64,39 +54,39 @@ LineChartByDay.prototype = {
 		var color = d3.scale.category10();
 
 		line.xAxis = d3.svg.axis()
-						  .scale(line.xScale)
-						  .orient("bottom");
+		.scale(line.xScale)
+		.orient("bottom").tickFormat(d3.time.format('%b'));
 
 		line.yAxis = d3.svg.axis()
-						.scale(line.yScale)
-						.orient("left");
-						
-						
+		.scale(line.yScale)
+		.orient("left");
+
+
 		var lineT = d3.svg.line()
-			.interpolate("basis")
-			.x(function(d) { return line.xScale(d.date); })
-			.y(function(d) { return line.yScale(d.temperature); });
+		.interpolate("basis")
+		.x(function(d) { return line.xScale(d.date); })
+		.y(function(d) { return line.yScale(d.value); });
 		
 		var text = "";
 		if(line.type == "wind")
-			text = "Maximum Wind Speed";
+			text = "Max Wind Speed";
 		else
-			text = "Minimum Pressure";
-			
-		 color.domain(d3.keys(line.data[0])
-    	  .filter(function(key) { 
-        	if(line.type == "wind")
-          		return key !== "date" && key !== "numberOfSamples" && key !== "pressureMax"; 
-        	else 
-          		return key !== "date" && key !== "numberOfSamples" && key !== "windAvg";
-       		})
-     	);
-		 
-		var cities = color.domain().map(function(name) {
+			text = "Min Pressure";
+
+		color.domain(d3.keys(line.data[0])
+			.filter(function(key) { 
+				if(line.type == "wind")
+					return key !== "date" && key !== "numberOfSamples" && key !== "pressureMax"; 
+				else 
+					return key !== "date" && key !== "numberOfSamples" && key !== "windAvg";
+			})
+			);
+
+		var ds = color.domain().map(function(name) {
 			return {
 				name: name,
 				values: line.data.map(function(d) {
-					return {date: d.date, temperature: +d[name]};
+					return {date: d.date, value: +d[name]};
 				})
 			};
 		});
@@ -104,45 +94,91 @@ LineChartByDay.prototype = {
 		line.xScale.domain(d3.extent(line.data, function(d) {return d.date;}));
 
 		line.yScale.domain([
-			d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
-			d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
-		]);
+			d3.min(ds, function(c) { return d3.min(c.values, function(v) { return v.value; }); }),
+			d3.max(ds, function(c) { return d3.max(c.values, function(v) { return v.value; }); })
+			]);
 
-		var city = line.svg.selectAll(".city")
-					.data(cities)
-					.enter().append("g")
-					.attr("class", "city");
-					
-					city.append("path")
-					.attr("class", "line")
-					.attr("d", function(d) {return lineT(d.values);})
-					.style("stroke", function(d) {return color(d.name);});
-	
+		var lineContainer = line.svg.selectAll(".lineData")
+		.data(ds)
+		.enter().append("g")
+		.attr("class", "lineData");
+
+		lineContainer.append("path")
+		.attr("class", "line")
+		.attr("d", function(d) {return lineT(d.values);})
+		.style("stroke", function(d) {return color(d.name);});
+
 		// Append the xAxis and yAxis to the bar chart
 		line.svg.append("g")
-				.call(line.xAxis)
-					.attr("class", "x axis")
-					.attr("transform", "translate(0," + line.height + ")")
-				.selectAll("text")
-					.attr("transform", "translate(20,0)");
+		.call(line.xAxis)
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + line.height + ")")
+		.selectAll("text")
+		.attr("transform", "translate(20,0)");
 
 		line.svg.append("g")
-				.attr("class", "y axis")
-				.call(line.yAxis)
-				.append("text")
-				.attr("transform", "rotate(-90)")
-				.attr("y", 6)
-				.attr("dy", ".71em")
-				.style("text-anchor", "end")
-				.text(text);
-					
+		.attr("class", "y axis")
+		.call(line.yAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text(text);
+
+		var focus = line.svg.append("g")
+		.attr("class", "focus")
+		.style("display", "none");
+
+		focus.append("circle")
+		.attr("r", 4.5);
+
+		focus.append("text")
+		.attr("x", 9)
+		.attr("dy", ".35em");
+
+		line.svg.append("rect")
+		.attr("class", "overlay")
+		.attr("width", line.width)
+		.attr("height", line.height)
+		.on("mouseover", function() { focus.style("display", null); })
+		.on("mouseout", function() { focus.style("display", "none"); })
+		.on("mousemove", mousemove);
+
+		var bisectDate = d3.bisector(function(d) { return d.date; }).left;
+
+		function mousemove() {
+			var x0 = line.xScale.invert(d3.mouse(this)[0]),
+			i = bisectDate(line.data, x0, 1),
+			d0 = line.data[i - 1],
+			d1 = line.data[i],
+			d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+			var displayValue = null;
+			if(line.type == "wind") 
+				displayValue = parseFloat(d.windAvg).toFixed(2);
+			else
+				displayValue = parseFloat(d.pressureMax).toFixed(2);
+			focus.attr("transform", "translate(" + line.xScale(d.date) + "," + line.yScale(displayValue) + ")");
+			focus.select("text").text(displayValue);
+		}
+
+		line.svg.selectAll("line.y")
+			.data(line.yScale.ticks(10))
+			 .enter().append("line")
+			 .attr("class", "y")
+			 .attr("x1", 0)
+			 .attr("x2", line.width)
+			 .attr("y1", line.yScale)
+			 .attr("y2", line.yScale)
+			 .style("stroke", "#ccc");
+
 	},
 
 	resize: function () {
 		var self = this,
-			bar = this.chart,
-			canvasWidth = d3.select(bar.tag).style("width"),
-			canvasHeight = d3.select(bar.tag).style("height");
+		bar = this.chart,
+		canvasWidth = d3.select(bar.tag).style("width"),
+		canvasHeight = d3.select(bar.tag).style("height");
 
 		/* Update the canvas size */
 		bar.width = parseInt(canvasWidth) - bar.margin.left - bar.margin.right,
@@ -158,8 +194,8 @@ LineChartByDay.prototype = {
 		});
 
 		bar.svg.select(".gmx.gmaxis")
-			.call(bar.xAxis.orient("bottom"))
-			.attr("transform", "translate(0," + bar.height + ")");
+		.call(bar.xAxis.orient("bottom"))
+		.attr("transform", "translate(0," + bar.height + ")");
 		svg.select(".gmy.gmaxis").call(bar.yAxis.orient("left"));
 
 		svg.selectAll(".gmbar_rect").attr({
@@ -173,9 +209,9 @@ LineChartByDay.prototype = {
 
 	init: function () {
 		var self = this,
-			line = this.chart,
-			canvasWidth = d3.select(line.tag).style("width"),
-			canvasHeight = d3.select(line.tag).style("height");
+		line = this.chart,
+		canvasWidth = d3.select(line.tag).style("width"),
+		canvasHeight = d3.select(line.tag).style("height");
 
 		/* Set the canvas size based on mbostock's best practices */
 		line.width = parseInt(canvasWidth) - line.margin.left - line.margin.right,
@@ -190,14 +226,14 @@ LineChartByDay.prototype = {
 
 		/* Set the svg container and create the graph */
 		line.svg = d3.select(line.tag).append("svg")
-			.attr({
-				width: line.width + line.margin.left + line.margin.right,
-				height: line.height + line.margin.top + line.margin.bottom
-			})
-			.append("g")
-			.attr("transform", "translate(" + line.margin.left + "," + line.margin.top + ")");
+		.attr({
+			width: line.width + line.margin.left + line.margin.right,
+			height: line.height + line.margin.top + line.margin.bottom
+		})
+		.append("g")
+		.attr("transform", "translate(" + line.margin.left + "," + line.margin.top + ")");
 		self.create();
-		//self.setTitle();
+		self.setTitle();
 	}
 
 }
