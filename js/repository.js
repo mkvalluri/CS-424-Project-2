@@ -28,10 +28,9 @@ Repository.prototype = {
 					else
 						fLandFall = (el.land == '');
 				}
-
 				return  fName
-						&& el.year >= filter.initial_date.getFullYear() 
-						&& el.year <= filter.final_date.getFullYear()
+						&& dateRangeOverlaps(filter.initial_date, filter.final_date,
+							formatDate(el.startDate), formatDate(el.endDate))
 						&& el.basin == filter.basin
 						&& el.wind.avg <= filter.max_wind
 						&& el.wind.avg >= filter.min_wind
@@ -55,4 +54,20 @@ Repository.prototype = {
 			return parseFloat(a.wind.max) - parseFloat(b.wind.max);
 		};
 	}
+}
+
+function dateRangeOverlaps(a_start, a_end, b_start, b_end) {
+    if (a_start <= b_start && b_start <= a_end) return true; // b starts in a
+    if (a_start <= b_end   && b_end   <= a_end) return true; // b ends in a
+    if (b_start <  a_start && a_end   <  b_end) return true; // a in b
+    return false;
+}
+
+function formatDate (inputDate) {
+	var dateString  = inputDate;
+	var year        = dateString.substring(0,4);
+	var month       = dateString.substring(4,6);
+	var day         = dateString.substring(6,8);
+
+	return new Date(year, month-1, day);
 }
