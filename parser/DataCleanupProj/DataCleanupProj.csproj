@@ -54,6 +54,7 @@
     <Compile Include="FilterDataByMonth.cs" />
     <Compile Include="FilteredData.cs" />
     <Compile Include="Geometry.cs" />
+    <Compile Include="HeatMapData.cs" />
     <Compile Include="HurricaneName.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties.cs" />

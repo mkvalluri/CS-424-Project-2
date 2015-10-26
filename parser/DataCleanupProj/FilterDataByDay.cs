@@ -8,18 +8,21 @@ namespace DataCleanupProj
 {
     class FilterDataByDay
     {
-        public int dayOfYear { get; set; }
+        public string date { get; set; }
 
-        public Wind wind { get; set; }
+        public double windMin { get; set; }
 
-        public Pressure pressure { get; set; }
+        public double windMax { get; set; }
+
+        public double windAvg { get; set; }
+
+        public double pressureMin { get; set; }
+
+        public double pressureMax { get; set; }
+
+        public double pressureAvg { get; set; }
 
         public int numberOfSamples { get; set; }
-
-        public FilterDataByDay()
-        {
-            wind = new Wind();
-            pressure = new Pressure();
-        }
+    
     }
 }

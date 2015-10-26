@@ -18,6 +18,9 @@ namespace DataCleanupProj
 
         static List<HurricaneName> hurricaneNames;
 
+        static List<HeatMapData> h;
+        static List<TempClass> tempClass;
+
         static void Main(string[] args)
         {
             DataWrapper outputData = new DataWrapper();
@@ -28,6 +31,7 @@ namespace DataCleanupProj
             hurricaneNames = new List<HurricaneName>();
             filterDataByMonth = new List<FilterDataByMonth>();
             filterDataByDay = new List<FilterDataByDay>();
+            tempClass = new List<TempClass>();
 
             var data = File.ReadAllLines(@"D:\Projects\hurdat2-1851-2014-060415.txt");
             var data2 = File.ReadAllLines(@"D:\Projects\hurdat2-nencpac-1949-2014-092515.txt");
@@ -53,6 +57,11 @@ namespace DataCleanupProj
             ConstructFinalObjectByDate();
             finalData = JsonConvert.SerializeObject(filterDataByDay, settings);
             File.WriteAllText(@"D:\Projects\filteredDatav2.json", finalData);
+
+            ConstructHeatMap();
+            CalculateBoundaries();
+            finalData = JsonConvert.SerializeObject(h, settings);
+            //File.WriteAllText(@"D:\Projects\heatmapData.json", finalData);
 
             Console.ReadLine();
         }
@@ -116,6 +125,7 @@ namespace DataCleanupProj
                     string l = tempLines[5].Substring(0, tempLines[5].Length - 1).Trim();
                     string k = tempLines[4].Substring(0, tempLines[4].Length - 1).Trim();
                     tempFeature.geometry.coordinates = new Decimal[] { Convert.ToDecimal(l) * -1, Convert.ToDecimal(k) };
+                    tempClass.Add(new TempClass() { lat = Convert.ToDouble(tempFeature.geometry.coordinates[0]), lon = Convert.ToDouble(tempFeature.geometry.coordinates[1]) });
 
                     tempFeature.properties.maxwind = Convert.ToInt64(tempLines[6].Trim()) == -99 ? 0 : Convert.ToInt64(tempLines[6].Trim());
                     if (wMax < tempFeature.properties.maxwind)
@@ -255,51 +265,137 @@ namespace DataCleanupProj
                         continue;
                     }
 
-                    f.wind.min = f.wind.max = f.wind.avg = 0;
-                    f.pressure.min = f.pressure.max = f.pressure.avg = 0;
-                    f.dayOfYear = d.DayOfYear;
+                    //f.wind.min = f.wind.max = f.wind.avg = 0;
+                    //f.pressure.min = f.pressure.max = f.pressure.avg = 0;
+                    f.date = d.ToString("yyyyMMdd");
 
                     var tempData = filteredDataByDay.FindAll(fv => fv.month == d.Month && fv.day == d.Day);
                     int count = 0;
                     foreach(var data in tempData)
                     {
-                        f.wind.min += data.wind.min;
-                        f.wind.max += data.wind.max;
-                        f.wind.avg += data.wind.avg;
+                        f.windMin += data.wind.min;
+                        f.windMax += data.wind.max;
+                        f.windAvg += data.wind.avg;
 
-                        f.pressure.min += data.pressure.min;
-                        f.pressure.max += data.pressure.max;
-                        f.pressure.avg += data.pressure.avg;
+                        f.pressureMin += data.pressure.min;
+                        f.pressureMax += data.pressure.max;
+                        f.pressureAvg += data.pressure.avg;
 
                         count++;
                     }
-                    f.wind.max /= count;
-                    f.wind.min /= count;
-                    f.wind.avg /= count;
-                    f.wind.max = CleanUp(f.wind.max);
-                    f.wind.min = CleanUp(f.wind.min);
-                    f.wind.avg = CleanUp(f.wind.avg);
+                    f.windMax /= count;
+                    f.windMax /= count;
+                    f.windAvg /= count;
+                    f.windMax = CleanUp(f.windMax);
+                    f.windMin = CleanUp(f.windMin);
+                    f.windAvg = CleanUp(f.windAvg);
+                    
+                    f.pressureMax /= count;
+                    f.pressureMin /= count;
+                    f.pressureAvg /= count;
 
-                    f.pressure.max /= count;
-                    f.pressure.min /= count;
-                    f.pressure.avg /= count;
 
-
-                    f.pressure.max = CleanUp(f.pressure.max);
-                    f.pressure.min = CleanUp(f.pressure.min);
-                    f.pressure.avg = CleanUp(f.pressure.avg);
+                    f.pressureMax = CleanUp(f.pressureMax);
+                    f.pressureMin = CleanUp(f.pressureMin);
+                    f.pressureAvg = CleanUp(f.pressureAvg);
 
                     f.numberOfSamples = count;
 
                     filterDataByDay.Add(f);
                 }
             }
-
         }
 
-        static float CleanUp(float v)
+        static void ConstructHeatMap()
         {
-            return Double.IsNaN((double)v) ? 0 : v;
+            double x0 = -168.331839;
+            double x1 = -3.097466;
+            double y0 = 69.145157;
+            double y1 = 3.464615;
+            h = new List<HeatMapData>();
+            double i = x0;
+            while (i < x1)
+            {
+                double j = y0;
+                while (j > y1)
+                {
+                    HeatMapData tempH = new HeatMapData();
+
+                    Line tempLine1 = new Line();
+                    tempLine1.line.Add(new Point(i, j));
+                    tempLine1.line.Add(new Point(i + 0.9, j));
+
+                    Line tempLine2 = new Line();
+                    tempLine2.line.Add(new Point(i + 0.9, j));
+                    tempLine2.line.Add(new Point(i + 0.9, j + 0.9));
+
+                    Line tempLine3 = new Line();
+                    tempLine3.line.Add(new Point(i + 0.9, j + 0.9));
+                    tempLine3.line.Add(new Point(i, j + 0.9));
+
+                    Line tempLine4 = new Line();
+                    tempLine4.line.Add(new Point(i, j + 0.9));
+                    tempLine4.line.Add(new Point(i, j));
+
+                    List<Line> lines = new List<Line>();
+                    lines.Add(tempLine1);
+                    lines.Add(tempLine2);
+                    lines.Add(tempLine3);
+                    lines.Add(tempLine4);
+                    tempH.Square = lines;
+                    tempH.Count = 0;
+                    h.Add(tempH);
+
+                    j = j - 0.9;
+			    }
+			    i = i + 0.9;
+		    }
+        }
+
+        static void CalculateBoundaries()
+        {
+         /*   tempClass.ForEach(f =>
+            {
+                Console.WriteLine(f.lat + "  " + f.lon);
+            });
+           */ foreach(var d in h)
+            {
+                double maxX = 0;
+                double minX = 9999999;
+                double maxY = 0;
+                double minY = 9999999;
+
+                d.Square.ForEach(l =>
+                {
+                    for(int i = 0; i < 2; i++)
+                    {
+                        if (minX >= l.line[i].x)
+                        {
+                            minX = l.line[i].x;
+                        }
+                        if (minY >= l.line[i].y)
+                        {
+                            minY = l.line[i].y;
+                        }
+                        if (maxX <= l.line[i].x)
+                        {
+                            maxX = l.line[i].x;
+                        }
+                        if (maxY <= l.line[i].y)
+                        {
+                            maxY = l.line[i].y;
+                        }
+                    }
+                });
+             //   Console.WriteLine(minX + " " + maxX + " " + minY + " " + maxY);
+                d.Count += tempClass.FindAll(p => p.lat >= minX && p.lat <= maxX && p.lon >= minY && p.lon <= maxY).Count;
+                //Console.WriteLine(d.Count);     
+            }
+        }
+
+        static double CleanUp(double v)
+        {
+            return Double.IsNaN(v) ? 0 : v;
         }
     }
 }
