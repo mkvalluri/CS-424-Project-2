@@ -96,7 +96,7 @@ App.prototype = {
 			
 			$("#cant-pacific").html("&nbsp;(" + reducedDataPA.length + " Results)");
 		}
-		console.log(self.reducedIds);	
+	
 		d3.selectAll(".nameLink").on("click", function(d){
 			var hurrId = $(this).attr('id');
 			var paths = d3.selectAll("." + hurrId).style("opacity",1);
@@ -114,7 +114,7 @@ App.prototype = {
 		});
 		
 		// Add the data to the maps
-		self.map.addHurricane(self.mapFilter);
+		self.map.addHurricane(self.mapFilter, self.reducedIds);
 	},
 
 	play: function(){
@@ -177,6 +177,7 @@ App.prototype = {
 		$('#min-wind').prop('disabled', enableOthers);
 		$('#max-wind').prop('disabled', enableOthers);
 		$('#min-pressure').prop('disabled', enableOthers);
+		$('#max-pressure').prop('disabled', enableOthers);
 		$('#cb-wind-speed').prop('disabled', enableOthers);
 		$('#cb-pressure').prop('disabled', enableOthers);
 		$('#top-filter').prop('disabled', enableOthers);

@@ -93,8 +93,8 @@ HurricaneList.prototype = {
 				var width = parseInt(tooltip.style("width"));
 				tooltip.select(".tname").html(hurr.name + " (" + hurr.year + ")");
 				tooltip.select(".tcategory").html(cat);
-				tooltip.select(".tstart").html("");
-				tooltip.select(".tend").html("");
+				tooltip.select(".tstart").html(hurr.startDate.substring(4,6) + "/" + hurr.startDate.substring(6,8) + "/"+ hurr.startDate.substring(0,4));
+				tooltip.select(".tend").html(hurr.endDate.substring(4,6) + "/" + hurr.endDate.substring(6,8) + "/"+ hurr.endDate.substring(0,4));
 				tooltip.select(".tmaxwind").html(hurr.wind.max + " " + self.speedUnit);
 				tooltip.select(".tminwind").html(hurr.wind.min + " " + self.speedUnit);
 				tooltip.select(".tavgwind").html(hurr.wind.avg + " " + self.speedUnit);
