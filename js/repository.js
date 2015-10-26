@@ -18,8 +18,16 @@ Repository.prototype = {
 				return el.name == filter.name && el.basin == filter.basin;
 			}else{
 				var fName = true;
+				var fLandFall = true;
 				if (filter.name != '')
 					fName = (el.name == filter.name);
+
+				if(filter.landfall != 'all') {
+					if(filter.landfall == 'yes')
+						fLandFall = (el.land == 'L');
+					else
+						fLandFall = (el.land == '');
+				}
 
 				return  fName
 						&& el.year >= filter.initial_date.getFullYear() 
@@ -28,7 +36,8 @@ Repository.prototype = {
 						&& el.wind.avg <= filter.max_wind
 						&& el.wind.avg >= filter.min_wind
 						&& el.pressure.avg >= filter.min_pressure
-						&& el.pressure.avg <= filter.max_pressure;
+						&& el.pressure.avg <= filter.max_pressure
+						&& fLandFall;
 			}
 		});
 

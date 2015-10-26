@@ -3,6 +3,7 @@ function App(){
 	this.bchartAtlantic = null;
 	this.bchartPacific = null;
 	this.reducedData = null;
+	this.reducedIds = null;
 
 	this.repository = new Repository();
 	this.mapFilter = {};
@@ -51,6 +52,14 @@ App.prototype = {
 				self.mapFilter.max_pressure = self.mapFilter.max_pressure * 68.9476;
 			}
 			self.mapFilter.top = parseInt($('#top-filter').val());
+			if($('#btn-landfall-all').hasClass('btn-primary')) {
+				self.mapFilter.landfall = "all";
+			}
+			else if ($('#btn-landfall-yes').hasClass('btn-primary')){
+				self.mapFilter.landfall = "yes";
+			} else {
+				self.mapFilter.landfall = "no";
+			}
 		};
 
 		// Data for filling the list items
@@ -64,16 +73,30 @@ App.prototype = {
 		self.listAtlantic.loadFilteredData(reducedDataAL, "#atlanticList");
 		self.listPacific.loadFilteredData(reducedDataPA, "#pacificList");
 
-		if (reducedDataAL == undefined)
+		self.reducedIds = [];
+		if (reducedDataAL == undefined) {
 			$("#cant-atlantic").html("&nbsp;(0 Results)");
-		else
+		}
+		else {
+			var length = reducedDataAL.length;
+			for(var i = 0; i < length; i++) {
+				self.reducedIds.push(reducedDataAL[i].id);
+			}
 			$("#cant-atlantic").html("&nbsp;(" + reducedDataAL.length + " Results)");
+		}
 
-		if (reducedDataPA == undefined)
+		if (reducedDataPA == undefined) {
 			$("#cant-pacific").html("&nbsp;(0 Results)");
-		else
+		}
+		else {
+			var length = reducedDataPA.length;
+			for(var i = 0; i < length; i++) {
+				self.reducedIds.push(reducedDataPA[i].id);
+			}
+			
 			$("#cant-pacific").html("&nbsp;(" + reducedDataPA.length + " Results)");
-
+		}
+		console.log(self.reducedIds);	
 		d3.selectAll(".nameLink").on("click", function(d){
 			var hurrId = $(this).attr('id');
 			var paths = d3.selectAll("." + hurrId).style("opacity",1);
