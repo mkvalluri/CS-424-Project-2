@@ -27,6 +27,7 @@
                     <li><a href="observations.html">Interesting Findings</a></li>
                 </ul>
             </div>
+            
             <div class="col-md-10 rowContainer">
                 <h1>Application Data</h1>
                 <p class="lead">The Atlantic hurricane database and the Northeast and North Central Pacific hurricane database were obtained from the <a href="http://www.nhc.noaa.gov/data/#hurdat" target="_blank">National Hurricane Center</a> webpage. These databases are in a comma-delimited text format. The dataset format information is available in the following <a href="http://www.nhc.noaa.gov/data/hurdat/hurdat2-format-atlantic.pdf" target="_blank">link</a>.</p>
@@ -200,6 +201,12 @@
 		    			</tbody>
                 </table>
                 
+                <h2>Data Cleanup Process</h2>
+                <p class="text-justify">The dataset came from 2 different sources. So we had to merge all of them into single file. While doing these tasks, we observed that data for few fields (max wind speed, min pressure, wind speed in each quadrant) were missing - this might be because of enough technologies were not present during that time to record those, or the was not captured at all for those fields. So we had to assign default value (0 in this case) to those fields. Also those fields were ignored while computing min, max and avg.
+                <br>
+                Once this is done, we now had a huge file which would be overkill for few of the static graphs created. So we extracted required fields and created seperate files for each type of data. In total we had 4 files, one containing the geojson data of all the hurricanes; another file with required fields in json format; another with required fields but grouped according to the month in json format; and the last one grouped according to the date.   
+                </p>
+
 				<h2>Parsing</h2>
 				<p>The NHC text datasets were used to create a single GeoJSON file. A C# custom development was used for this task.</p>
 
@@ -243,6 +250,122 @@
                 		</code>
                 	</pre>
                 </div>
+
+                 <h2>Example filtered data containing only few fields</h2>
+                <div class="highlight">
+                    <pre>
+                        <code>
+[
+   {
+      "name":"UNNAMED",
+      "id":"AL011851",
+      "startDate":"18510625",
+      "endDate":"18510628",
+      "day":28,
+      "month":6,
+      "year":1851,
+      "basin":"AL",
+      "wind":{
+         "min":40.0,
+         "max":80.0,
+         "avg":60.7142868
+      },
+      "pressure":{
+         "min":0.0,
+         "max":0.0,
+         "avg":"NaN"
+      },
+      "land":"L"
+   },
+   {
+      "name":"UNNAMED",
+      "id":"AL021851",
+      "startDate":"18510705",
+      "endDate":"18510705",
+      "day":5,
+      "month":7,
+      "year":1851,
+      "basin":"AL",
+      "wind":{
+         "min":80.0,
+         "max":80.0,
+         "avg":80.0
+      },
+      "pressure":{
+         "min":0.0,
+         "max":0.0,
+         "avg":"NaN"
+      },
+      "land":""
+   }
+]
+                        </code>
+                    </pre>
+                </div>
+
+
+
+                 <h2>Example filtered data grouped by months</h2>
+                <div class="highlight">
+                    <pre>
+                        <code>
+[
+   {
+      "month":1,
+      "data":[
+         {
+            "name":"UNNAMED",
+            "id":"AL011938",
+            "month":1,
+            "year":1938,
+            "basin":"AL",
+            "wind":{
+               "min":35.0,
+               "max":70.0,
+               "avg":52.272728
+            },
+            "pressure":{
+               "min":0.0,
+               "max":0.0,
+               "avg":0.0
+            }
+         },
+         {
+            "name":"UNNAMED",
+            "id":"AL011951",
+            "month":1,
+            "year":1951,
+            "basin":"AL",
+            "wind":{
+               "min":40.0,
+               "max":55.0,
+               "avg":48.5365868
+            },
+            "pressure":{
+               "min":0.0,
+               "max":0.0,
+               "avg":0.0
+            }
+         }
+      ]
+   }
+]
+                        </code>
+                    </pre>
+                </div>
+                 <h2>Example filtered data grouped by days</h2>
+                <div class="highlight">
+                    <pre>
+                        <code>
+date,windAvg,pressureMax,numberOfSamples
+20120101,0,0,0
+20120102,0,100,1000
+20120103,0,93,780
+                        </code>
+                    </pre>
+                </div>
+
+
 
             </div>
         </div>
