@@ -3,6 +3,7 @@ body {
 }
 
 .rowContainer {  
+  margin-top: -10px;
   border-left: 0.1em solid gray;
   width: calc(100% / 12 * 9);
 }
